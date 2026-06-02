@@ -1,0 +1,11 @@
+# Libraries
+*.lib
+*.a
+
+# Object files
+*.o
+
+# Text files
+*.txt
+
+

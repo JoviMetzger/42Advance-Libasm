@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <fcntl.h>
+
+// your assembly functions
+size_t  ft_strlen(const char *s);
+// char    *ft_strcpy(char *dst, const char *src);
+// int     ft_strcmp(const char *s1, const char *s2);
+ssize_t ft_write(int fd, const void *buf, size_t count);
+ssize_t ft_read(int fd, void *buf, size_t count);
+// char    *ft_strdup(const char *s);
+
+int main(void)
+{
+    // ft_strlen
+    size_t len = ft_strlen("Hello world!");
+    printf("ft_strlen: %zu\n", len);
+
+    // // ft_strcpy
+    // char src[] = "Hello world!";
+    // char dst[50];
+    // ft_strcpy(dst, src);
+    // printf("ft_strcpy: %s\n", dst);
+
+    // // ft_strcmp
+    // printf("ft_strcmp: %d\n", ft_strcmp("abc", "abd"));
+
+    // ft_write
+    ft_write(1, "ft_write:\n", 11);
+    ft_write(1, "Hello World\n", 13);
+
+    // ft_strdup
+    // char *dup = ft_strdup("Hello World42!");
+    // printf("ft_strdup: %s\n", dup);
+    // free(dup);
+
+    // ft_read
+    char buff[100];
+    int fd = open("test.txt", O_RDONLY);
+    ssize_t line = ft_read(fd, buff, 99);
+    buff[line] = '\0';
+    printf("ft_read:\n %s\n", buff);
+    close(fd);
+
+    return 0;
+}
