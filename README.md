@@ -1,3 +1,4 @@
+<!--
 Mental Note:
 - for 42 use NASM assembler
 - must write 64-bit assembly
