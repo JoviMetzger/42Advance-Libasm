@@ -4,6 +4,19 @@ Mental Note:
 - must write 64-bit assembly
 - use the Intel syntax, not the AT&T syntax
 
+
+
+
+https://www.timdbg.com/posts/fakers-guide-to-assembly/
+
+https://people.kth.se/~dbro/x86-64-ref-sheet.pdf
+
+https://www.cs.uaf.edu/2017/fall/cs301/reference/x86_64.html
+
+https://gist.github.com/justinian/385c70347db8aca7ba93e87db90fc9a6
+
+https://www.scribd.com/document/991336592/Intro-to-Assembly-Language-Module-Cheat-Sheet
+
 ---
 
 [tutorials](https://www.tutorialspoint.com/assembly_programming/assembly_introduction.htm)
