@@ -1799,4 +1799,89 @@ but the address where the string begins.
 
 ---
 
+
+rsp is the stack pointer register in x86-64.
+
+So when you see:
+
+sub rsp, 8
+
+or
+
+add rsp, 8
+
+it means you are moving the stack up or down by 8 bytes.
+
+🧠 1. What is rsp?
+RSP = Register Stack Pointer
+
+It always points to the top of the stack (current stack position in memory).
+
+Think:
+
+stack = memory area used for function calls, local variables
+rsp = “where the stack currently ends”
+🧠 2. What does sub rsp, 8 mean?
+sub rsp, 8
+
+👉 Move stack pointer down by 8 bytes
+
+That means:
+
+you just “reserved space” on the stack
+
+Visually:
+
+Before:
+rsp → [old top]
+
+After sub rsp, 8:
+rsp → [new space allocated]
+🧠 3. Why do we do this before printf?
+
+On Linux x86-64 (System V ABI):
+
+👉 The stack must be 16-byte aligned before calling functions
+
+So sometimes you adjust it like:
+
+sub rsp, 8
+call printf
+add rsp, 8
+🧠 4. What does add rsp, 8 do?
+add rsp, 8
+
+👉 Undo the change
+
+So you:
+
+allocate stack space before call
+restore stack after call
+🧠 5. Why 8 specifically?
+
+Because:
+
+registers are 64-bit = 8 bytes
+stack alignment rules often require adjusting by 8 to fix 16-byte alignment
+🧠 6. Simple analogy
+
+Think of stack like a pile of plates:
+
+rsp = pointer to top plate
+sub rsp, 8 = “move pointer down → reserve space”
+add rsp, 8 = “move pointer back up → cleanup”
+⚠️ 7. What happens if you don’t align rsp?
+
+Bad things like:
+
+crashes in printf
+random memory corruption
+broken SIMD instructions inside libc
+
+Even if your code “seems fine”
+
+
+
+
+mov eax, 0			; NO floating-point/vector arguments were passed (for ABI rules) -> xor eax, eax: required for variadic functions
 ---

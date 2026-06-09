@@ -29,7 +29,7 @@ int main(void)
 	printf("ft_strcmp: %d\n", ft_strcmp("hello", "helllo"));
 
 	// ft_write
-	ft_write(1, "ft_write:\n", 11);
+	ft_write(1, "ft_write: ", 10);
 	ft_write(1, "Hello World\n", 13);
 
 	// ft_strdup
@@ -44,7 +44,7 @@ int main(void)
 	int fd = open("test.txt", O_RDONLY);
 	ssize_t line = ft_read(fd, buff, 99);
 	buff[line] = '\0';
-	printf("ft_read:\n%s\n", buff);
+	printf("ft_read:\n%s", buff);
 	close(fd);
 
 	return 0;

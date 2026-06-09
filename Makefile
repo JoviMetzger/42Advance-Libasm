@@ -47,7 +47,7 @@ mainC:
 	@gcc main.c -L. -lasm -no-pie -o testC
 	@$(INPUTFILE)
 	@echo "$(GREEN)Created:$(RESET) test.txt -> For Input File"
-	@echo "$(CORAL)Executable:$(RESET) testC"
+	@./testC
 
 # Compile with main.s -> ASM file
 mainASM: 
@@ -56,7 +56,7 @@ mainASM:
 	@gcc main.o -L. -lasm -no-pie -o testASM
 	@$(INPUTFILE)
 	@echo "$(GREEN)Created:$(RESET) test.txt -> For Input File"
-	@echo "$(CORAL)Executable:$(RESET) testASM"
+	@./testASM
 
 # Clean
 clean:

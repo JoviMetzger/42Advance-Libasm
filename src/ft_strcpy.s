@@ -15,5 +15,5 @@ ft_strcpy:
 	mov	rax, rdi		; set rdi as return value -> return dest;
 	cld					; clear Direction Flag, if DF = 0 the pointers increase -> rdi++, rsi++
 	rep	movsb			; copy one byte -> (rep): repeat while rcx != 0
-	mov	BYTE [rdi], 0	; set last position to null -> dest[len] = '\0'
+	mov	BYTE[rdi], 0	; set last position to null -> dest[len] = '\0'
 	ret 				; return rax
