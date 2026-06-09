@@ -27,6 +27,9 @@ section	.data
 	destCPY times 32 db 0
 	strFormat db "%s", 10, 0
 
+	str1 db "hello", 0
+	str2 db "helllo", 0
+
 section .bss
 	buffer resb 100
 
@@ -62,7 +65,7 @@ main:
 	call printf				; call printf()
 
 	;; --- int ft_strcmp(const char *s1, const char *s2) ---
-;ft_strcmp.s
+	call ft_strcmp
 
 	;; --- ssize_t ft_write(int fd, const void *buf, size_t count) ---
 	mov rdi, 1			; fd = stdout
@@ -89,10 +92,10 @@ main:
 	mov rdi, srcDup		; input string
 	call ft_strdup		; call ft_strdup()
 
-	mov rdx, rax		; reurn from ft_strdup
-	mov rdi, 1			; stdout
-	mov rsi, lenDup		; len of string input
-	call ft_write		; call ft_write()
+	lea rdi, [rel strFormat]
+	mov rsi, rax		; return from ft_strdup()
+	mov eax, 0			; NO floating-point/vector arguments were passed (for ABI rules)
+	call printf			; call printf()
 
 	;; --- return 0 -> main() successful program termination ---
 	mov eax, 0
