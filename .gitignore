@@ -3,9 +3,12 @@
 *.a
 
 # Object files
+*obj/
 *.o
 
 # Text files
 *.txt
 
-
+# Executable
+textASM
+testC

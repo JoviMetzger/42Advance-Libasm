@@ -18,11 +18,11 @@ RESET		= \033[0m
 # Sources files
 SRC_DIR		= src
 SRC			=	$(SRC_DIR)/ft_strlen.s \
- 				$(SRC_DIR)/ft_write.s \
+				$(SRC_DIR)/ft_write.s \
 				$(SRC_DIR)/ft_read.s \
-# 				$(SRC_DIR)/ft_strcpy.s \
-# 				$(SRC_DIR)/ft_strcmp.s \
-# 				$(SRC_DIR)/ft_strdup.s
+				$(SRC_DIR)/ft_strcpy.s \
+				$(SRC_DIR)/ft_strcmp.s \
+				$(SRC_DIR)/ft_strdup.s
 
 # Objects files
 OBJ_DIR		= obj
@@ -43,6 +43,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.s
 
 # Compile with main.c -> C file
 mainC:
+	@rm -rf test.txt
 	@gcc main.c -L. -lasm -no-pie -o testC
 	@$(INPUTFILE)
 	@echo "$(GREEN)Created:$(RESET) test.txt -> For Input File"
@@ -50,11 +51,12 @@ mainC:
 
 # Compile with main.s -> ASM file
 mainASM: 
+	@rm -rf test.txt
 	@nasm -f elf64 main.s
-	@gcc main.o -L. -lasm -no-pie -o testAMS
+	@gcc main.o -L. -lasm -no-pie -o testASM
 	@$(INPUTFILE)
 	@echo "$(GREEN)Created:$(RESET) test.txt -> For Input File"
-	@echo "$(CORAL)Executable:$(RESET) testAMS"
+	@echo "$(CORAL)Executable:$(RESET) testASM"
 
 # Clean
 clean:
@@ -62,7 +64,7 @@ clean:
 		@echo "$(GREEN) $(ITALIC) ✅ Cleaned object files ✅$(RESET)"
 
 fclean: clean
-		@rm -f $(NAME) testC testAMS main.o test.txt
+		@rm -f $(NAME) testC testASM main.o test.txt
 		@echo "$(GREEN) $(ITALIC)  ✅ Removed executable ✅$(RESET)"
 
 re:		fclean all

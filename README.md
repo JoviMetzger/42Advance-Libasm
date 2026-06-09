@@ -1,3 +1,4 @@
+# Assembly
 <!--
 Mental Note:
 - for 42 use NASM assembler
@@ -1719,5 +1720,83 @@ call ft_write
 ```
 
 Then add a newline string separately. Or stick with `printf` but ensure it flushes before calling `ft_write`.
+
+
+---
+
+The movsb (Move String Byte) instruction in x86 assembly copies a single byte from the source memory location to the destination
+
+In assembly language, MOVSB (MOVe String Byte) is a specialized instruction used to copy a 1-byte value from one memory location to another. It is frequently used with a repeat prefix (REP)
+
+
+movsb will only copy a single byte. You must use the rep prefix to do multiple bytes.
+
+What is DF?
+
+DF = Direction Flag.
+
+String instructions like:
+
+movsb
+
+can move:
+
+forward
+backward
+
+depending on DF.
+
+cld
+
+means:
+
+DF = 0
+
+which makes pointers increase:
+
+rsi++
+rdi++
+
+after each byte copy.
+
+What does times 32 db 0 mean?
+
+This is NASM syntax:
+
+dest times 32 db 0
+
+means:
+
+Create 32 bytes
+Initialize every byte to 0
+
+
+What does lea mean?
+
+lea = Load Effective Address
+
+It computes an address and stores that address in a register.
+
+lea rdi, [rel strFormat]
+
+means:
+
+rdi = address of strFormat
+
+So:
+
+rdi = 0x1000
+
+not:
+
+rdi = '%'
+
+and not:
+
+rdi = "%s\n"
+
+but the address where the string begins.
+
+---
 
 ---
