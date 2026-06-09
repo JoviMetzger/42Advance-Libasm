@@ -13,12 +13,22 @@ extern ft_strdup
 section	.data
 	src db "Hello world!", 0
 	len equ $ - src - 1
+
 	srcW db "Hello world!42", 10, 0
 	lenW equ $ - srcW - 1
-	srcD db "Hello world!-COPY", 10, 0
-	lenD equ $ - srcD - 1
+
+	srcDup db "Hello world! - DUPLICATE", 0
+	lenDup equ $ - srcDup - 1
+
 	filename db "test.txt", 0
-	intFormat db "%zu", 0
+	intFormat db "%zu", 10, 0
+
+	srcCPY db "Hello - Copy", 0
+	destCPY times 32 db 0
+	strFormat db "%s", 10, 0
+
+	str1 db "hello", 0
+	str2 db "helllo", 0
 
 section .bss
 	buffer resb 100
@@ -41,20 +51,43 @@ main:
 
 	;; Use "echo $?"
 	;mov rdi, rax		; copies the ft_strlen return value into rdi so 'echo $?' works
-    ;mov rax, 60		; exit(rax)
-    ;syscall
+	;mov rax, 60		; exit(rax)
+	;syscall
 
 	;; --- char *ft_strcpy(char *dst, const char *src) ---
-;ft_strcpy.s
+	lea rdi, [rel destCPY]	; rdi = dest
+	lea rsi, [rel srcCPY]	; rsi = src
+	call ft_strcpy			; call ft_strcpy()
+
+	lea rdi, [rel strFormat]
+	mov rsi, rax			; return from ft_strcpy()
+	mov eax, 0				; NO floating-point/vector arguments were passed (for ABI rules)
+	call printf				; call printf()
 
 	;; --- int ft_strcmp(const char *s1, const char *s2) ---
-;ft_strcmp.s
+	mov rdi, str1		; first agrument is str1
+	mov rsi, str2		; second argument is str2
+	call ft_strcmp		; call ft_strcmp()
+
+	mov rsi, rax		; return value of ft_strcmp()
+	mov rdi, intFormat	; format
+	mov eax, 0			; NO floating-point/vector arguments were passed (for ABI rules)
+	call printf			; call printf()
 
 	;; --- ssize_t ft_write(int fd, const void *buf, size_t count) ---
 	mov rdi, 1			; fd = stdout
 	mov rsi, srcW		; input string
-    mov rdx, lenW		; length of string
+	mov rdx, lenW		; length of string
 	call ft_write		; call write()
+
+	;; --- char *ft_strdup(const char *src) ---
+	mov rdi, srcDup		; input string
+	call ft_strdup		; call ft_strdup()
+
+	lea rdi, [rel strFormat]
+	mov rsi, rax		; return from ft_strdup()
+	mov eax, 0			; NO floating-point/vector arguments were passed (for ABI rules)
+	call printf			; call printf()
 
 	;; --- ssize_t ft_read(int fd, void *buf, size_t count); ---
 	mov rdi, filename	; path to the filename
@@ -70,15 +103,6 @@ main:
 	mov rdi, 1			; stdout
 	mov rsi, buffer		; buffer to print
 	call ft_write		; call ft_write()
-
-	;; --- char *ft_strdup(const char *src) ---
-	;mov rdi, srcD		; input string
-	;call ft_strdup		; call ft_strdup()
-
-	;mov rdx, rax		; reurn from ft_strdup
-	;mov rdi, 1			; stdout
-	;mov rsi, lenC		; len of string input
-	;call ft_write		; call ft_write()
 
 	;; --- return 0 -> main() successful program termination ---
 	mov eax, 0
