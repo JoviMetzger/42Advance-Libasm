@@ -1,184 +1,201 @@
-# 🛠🔩 Assembly 🛠🔩
+# 🛠️🔩 Assembly 🛠️🔩
 
 <br><br>
 
 ## Table of Contents
-  - [What is Assembly?](#What-is-Assembly)
-  - [The Assembly Ecosystem](#Assembly-Ecosystem)
-      - [Processor architecture *(x86, ARM, RISC-V)*]()
-      - [Bitness *(16-bit, 32-bit, 64-bit)*]()
-      - [Assembler Software *(NASM, MASM, GAS)*]()
-  - [Intel Syntax vs. AT&T Syntax](#Intel-syntax-VS-AT&T-syntax)
-  - [ABI Rules](#ABI-Rules)
-  - [Getting Started](#Where-to-start)
-    - [Installation and Setup]()
-    - [Compiling Assembly]()
-    - [Assembly Program Structure]()
-    - [Cheat Sheet]()
-  - [Resources](#Resources)
+  - [What is Assembly?](#what-is-assembly?)
+  - [The Assembly Ecosystem](#the-assembly-ecosystem)
+      - [Processor architecture *(x86, ARM, RISC-V)*](#processorArchitecture)
+      - [Bitness *(16-bit, 32-bit, 64-bit)*](#bitness)
+      - [Assembler Software *(NASM, MASM, GAS)*](#assemblerSoftware)
+  - [Intel Syntax vs. AT&T Syntax](#intel-syntax-vs.-AT&T-syntax)
+  - [ABI Rules](#ABI-rules)
+  - [Getting Started](#getting-started)
+    - [Installation and Setup](#installationSetup)
+    - [Compiling Assembly](#compilingAssembly)
+    - [Assembly Program Structure](#assemblyStructure)
+    - [Cheat Sheet](#cheatSheet)
+  - [Resources](#resources)
 
 <br>
 
-<!--
 
-## What is Assembly
+
+## ⚙️What is Assembly?
 Every computer has a **processor (CPU)** that performs calculations, makes decisions, and controls how the computer works. <br>
 
 A processor can only understand instructions written in **machine language**, <br>which consists of binary numbers (**0s and 1s**). <br>
-*For Example:* **`10110000 01100001`** <br>
+***For Example:*** *`10110000 01100001`* <br>
 
-Computers can read machine language directly, but it is extremely difficult for humans to write, read, and debug. Because of this, **assembly language** was created.<br>
+Computers can read machine language directly, but it is extremely difficult for humans to write, read, and debug. <br> Because of this, **assembly language** was created.<br>
 
 Assembly provides a human readable representation of machine instructions, allowing programmers to communicate directly with the processor using short, readable commands called **mnemonics**. <br>
+***For Example:*** 
+```
+mov rdi, 5
+add rdi, 3 
+```
 
-Even though modern programming languages are much easier to use, <br> **assembly language is still important because <u>it provides**</u>: <br>
-&emsp;&nbsp; •&nbsp; Very fast and efficient programs <br>
-&emsp;&nbsp; •&nbsp; Direct control over hardware <br>
-&emsp;&nbsp; •&nbsp; Low memory usage <br>
-&emsp;&nbsp; •&nbsp; Access to processor-specific features <br>
+<br><br>
 
-**Assembly is commonly used in:** <br>
-&emsp;&nbsp; •&nbsp; Operating systems <br>
-&emsp;&nbsp; •&nbsp; Device drivers <br>
-&emsp;&nbsp; •&nbsp; Embedded systems and microcontrollers <br>
-&emsp;&nbsp; •&nbsp; Bootloaders <br>
+Even though modern programming languages are much easier to use, assembly language is still important because it provides: <br>
+  * **Very fast and efficient programs**
+  * **Direct control over hardware**
+  * **Low memory usage**
+  * **Access to processor-specific features**
 
 <br>
 
-## Assembly Ecosystem
+## ⚙️The Assembly Ecosystem
 
 In assembly programming, there are three important concepts:
-* **Processor architecture** *(x86, ARM, RISC-V)*
-* **Bitness** *(16-bit, 32-bit, 64-bit)*
-* **Assembler software** *(NASM, MASM, GAS)*
 
-The processor architecture determines which instructions a CPU understands (Depends on the device).
-Bitness determines the size of registers and memory addresses (What version/generation the processor is).
-Assembler software translates assembly code into machine code that the processor can execute.
+<ul><details>
+  <summary id="processorArchitecture">&nbsp;&nbsp;&nbsp;<strong>Processor architecture</strong> <i>(x86, ARM, RISC-V)</i> </summary>
+  <br>
 
 ## Processor architecture
-Assembly language is considered a low-level programming language because it is very close to the hardware. <br>Each processor family *(such as x86, ARM, or RISC-V)* has its own assembly language and instruction set. <br>This means assembly code written for one type of processor may not work on another without modification. <br>
+Each processor architecture *(such as x86, ARM, or RISC-V)* has its own **instruction set architecture (ISA)**.<br>
 
-A processor architecture defines:
-- The instructions a CPU understands
-- The registers it has
-- How memory is accessed
+A processor architecture defines the instruction set, **registers, memory-access rules**, and other features that software uses to communicate with the CPU. Because different architectures use different instruction sets, assembly language written for one architecture *(such as x86-64)* generally cannot run directly on another architecture *(such as ARM or RISC-V)*. <br> <br>
 
-processor type:
-* **x86-64** &nbsp;&nbsp;–&nbsp; Used in most desktop and laptop computers
-* **ARM** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;–&nbsp; Used in smartphones, tablets, and many embedded systems
-* **RISC-V** &nbsp;&nbsp;&nbsp;–&nbsp; A newer open-source processor architecture
+**Processors Architecture Type:**
+```
+ •  x86-64  – Used in most desktop and laptop computers
+ •  ARM     – Used in smartphones, tablets, and many embedded systems
+ •  RISC-V  – An open-source processor architecture that allows anyone to design compatible processors without licensing fees
+```
+<br>
 
-Each architecture has its own assembly language.
+Each architecture has its own assembly language. <br>
+**For example:** <br>
+```
+x86 assembly   |   ARM assembly
+-------------- | ---------------
+mov eax, 5     |   MOV R0, #5
+add eax, 3     |   ADD R0, R0, #3
 
-For example: <br>
-x86 assembly
 ```
-mov eax, 5 
-add eax, 3
-```
-ARM assembly
-```
-MOV R0, #5
-ADD R0, R0, #3
-```
+**Both programs do the same thing:** `5 + 3 = 8`<br>
 
-Both programs do the same thing:
-```
-5 + 3 = 8
-```
-But the instructions look different because the processors are different.
+The instructions look different because the processors are different. <br>
 Assembly code written for one processor architecture will usually not work on another without modification.
 
+---
+
+<br>
+
+</details>
+
+<details>
+  <summary id="bitness">&nbsp;&nbsp;&nbsp;<strong>Bitness</strong> <i>(16-bit, 32-bit, 64-bit)</i></summary>
+  <br>
 
 ## Bitness
 
-The "bitness" mainly determines:
-- Register size
-- Memory addressing size
-- Available instructions
+Bitness describes the width of a processor's general-purpose registers and the address size supported by an architecture. It influences how much data can be handled efficiently and how memory addressing works, but it does not define the instruction set architecture. Different architectures can have the same bitness while using completely different instruction sets.
 
-Today, most computers use **x86-64**, the 64-bit version of x86.
+**For example:** <br>
+x86-64 has instructions that 32-bit x86 doesn't. <br>
+But two different 64-bit architectures *(x86-64 and ARM64)* have completely different instruction sets despite having the same bitness.
 
-The different x86 processors versions:
 
-| | Architecture | Common Name |
-| ---- | ---- | ---- |
-| 1 gen | 16-bit x86 |	8086 / DOS-era x86 |
-| 2 gen | 32-bit x86 |	IA-32 |
-| 3 gen | 64-bit x86 |	x86-64 / AMD64 |
+**The "bitness" mainly determines:** <br>
+&emsp; •&nbsp; Register size<br>
+&emsp; •&nbsp; Memory address size<br>
+&emsp; •&nbsp; The size of data the CPU can process in a single operation<br><br><br>
 
-These are generations of the same x86 family.
-Bitness does not define a processor family. It describes how much data a processor can handle at once.
-
+➡️ **The different bit versions:**
 ```
+  • 16-bit
+  • 32-bit
+  • 64-bit
+```
+<br>
+
+➡️ **The different processors versions:**
+```
+The evolution of the x86 family:
+
 x86 family
- ├─ 16-bit
- ├─ 32-bit
- └─ 64-bit
- ```
+ ├─ 16-bit (8086, 80286)
+ ├─ 32-bit (80386, 80486, Pentium)
+ └─ 64-bit (x86-64 / AMD64)
 
+----------------------------------
 
-## Assembler software
-Before a computer can run an assembly program, it must be translated into machine language by a program called an assembler. 
-An assembler is simply a program that translates assembly language into machine code.
+The evolution of the ARM family:
 
-Example:
-Assembly:
+ARM family
+ ├─ 32-bit (ARM / AArch32)
+ └─ 64-bit (ARM64 / AArch64)
 ```
-mov eax, 5
-```
-Machine code:
-```
-B8 05 00 00 00
-```
+❗**NOTE:**❗ <br>
+The names inside the parentheses are examples of processors or architecture versions belonging to that family and bitness. <br>  
 
-Assemblers Software all target the same processor family but use slightly different syntax and features. Think of them as different translators for the same language.
-
-**Assemblers for the x86 architecture:** *All of these target the x86 architecture.* <br>
-&emsp;&nbsp; •&nbsp; Microsoft Macro Assembler **(MASM)** <br>
-&emsp;&nbsp; •&nbsp; Borland Turbo Assembler **(TASM)** <br>
-&emsp;&nbsp; •&nbsp; GNU Assembler **(GAS)** <br>
-&emsp;&nbsp; •&nbsp; Netwide Assembler **(NASM)** <br>
-
-They support the same processor but use slightly different syntax.
-
-| NASM | GAS *(AT&T syntax)* | MASM |
-| ---- | ---------- | --------- |
-| `mov eax, 5` | `movl $5, %eax` | `mov eax, 5` |
-
-All three mean:
-`Put the value 5 into register EAX.`
-
-
-What assembler should I use for x86-64?
-For a beginner:
-- Processor: x86-64
-- Assembler: NASM
-- Operating System: Windows or Linux
-
-**Use NASM assembler because it is:** <br>
-&emsp;&nbsp; •&nbsp; Free and open source <br>
-&emsp;&nbsp; •&nbsp; Well documented <br>
-&emsp;&nbsp; •&nbsp; Widely used in tutorials and educational material <br>
-&emsp;&nbsp; •&nbsp; Available on both Linux and Windows <br>
-&emsp;&nbsp; •&nbsp; Easy for beginners to learn <br>
-
-**Assemblers for the ARM architecture:**
- • GNU Assembler **(GAS)**
- • ARMASM *(Arm Compiler Assembler)*
- • LLVM Integrated Assembler *(Clang)*
-
-**Assemblers for the RISC-V architecture:**
- • GNU Assembler **(GAS)**
- • LLVM Integrated Assembler *(Clang)*
- • RISC-V GNU Toolchain Assembler
-
+---
 
 <br>
 
-## Intel syntax VS AT&T syntax
-Assembly language can generally be written using two syntax styles: <br>
+
+</details>
+
+<details>
+  <summary id="assemblerSoftware">&nbsp;&nbsp;&nbsp;<strong>Assembler software</strong> <i>(NASM, MASM, GAS)</i></summary>
+  <br>
+
+## Assembler software
+Before a computer can run an assembly program, it must be translated into machine language by a program called an assembler.
+An assembler is simply a program that translates assembly language into machine code.<br>
+
+Assemblers Software all target the same processor family but use slightly different syntax and features. <br>
+Think of them as different translators for the same language. <br>
+
+**Assemblers for the x86 architecture:** <br>
+&emsp; •&nbsp; Microsoft Macro Assembler **(MASM)** <br>
+&emsp; •&nbsp; Borland Turbo Assembler **(TASM)** <br>
+&emsp; •&nbsp; GNU Assembler **(GAS)** <br>
+&emsp; •&nbsp; Netwide Assembler **(NASM)** <br><br>
+
+**Assemblers for the ARM architecture:** <br>
+&emsp; •&nbsp; GNU Assembler **(GAS)** <br>
+&emsp; •&nbsp; ARMASM **(Arm Compiler Assembler)** <br>
+&emsp; •&nbsp; LLVM Integrated Assembler **(Clang)** <br><br>
+
+**Assemblers for the RISC-V architecture:** <br>
+&emsp; •&nbsp; GNU Assembler **(GAS)** <br>
+&emsp; •&nbsp; LLVM Integrated Assembler **(Clang)** <br>
+&emsp; •&nbsp; RISC-V GNU Toolchain Assembler <br><br>
+
+### ❓ What assembler should I use for x86-64❓
+**For a beginner:** <br>
+&emsp; •&nbsp; Processor: x86-64 <br>
+&emsp; •&nbsp; Assembler: NASM <br>
+&emsp; •&nbsp; Operating System: Windows or Linux <br>
+
+**NASM assembler because it is:** <br>
+&emsp; •&nbsp; Free and open source <br>
+&emsp; •&nbsp; Well documented <br>
+&emsp; •&nbsp; Widely used in tutorials and educational material <br>
+&emsp; •&nbsp; Available on Linux, macOS and Windows <br>
+&emsp; •&nbsp; Easy for beginners to learn <br>
+
+---
+
+</details></ul>
+
+<br>
+
+#### In Summary:
+**The Processor architecture** determines which **instructions** the CPU understands. <br>
+**Bitness** determines the **size** of registers and **memory addresses** the CPU can work with. <br>
+**Assembler software translates** assembly language **into machine code** for a specific architecture. <br>
+
+<br><br>
+
+
+## ⚙️Intel Syntax vs. AT&T Syntax
+Assembly language can generally be written using two syntax styles: <br><br>
 1️⃣ **Intel syntax** <br>
 2️⃣ **AT&T syntax** <br><br>
 The underlying instructions are the same, but the notation is different.
@@ -194,46 +211,39 @@ The underlying instructions are the same, but the notation is different.
 | Originated From  | Intel's official documentation | Early UNIX systems |
 | Commonly Used By | • NASM<br>• MASM<br>• Intel manuals<br>• Windows assembly development | • GAS<br>• GCC output<br>• Older UNIX tools <br> &ensp;|
 
-<br>
+<br><br>
+
+<!--
+## ⚙️ABI Rules
+An **Application Binary Interface (ABI)** is a low-level set of rules that defines how compiled machine code communicates with the operating system, hardware, or other compiled libraries.
+
+ABI
+Machine-code level interface:
+```
+argument in rdi
+return in rax
+stack aligned to 16 bytes
+```
+The compiler cares heavily about ABI rules.
+Assembly programmers must manually follow them.
+
+Important practical rule
+
+For modern Linux x86-64 assembly:
+Use:
+- rax, rdi, rsi, rdx, ...
+- syscall
+- x86-64 syscall numbers
+- System V AMD64 ABI
+
+Avoid:
+- int 0x80
+- old 32-bit syscall tables
+- old ebx/ecx/edx syscall conventions
+
+unless intentionally writing 32-bit code.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Where to start
-Install & Set up
-
-
-
-https://www.timdbg.com/posts/fakers-guide-to-assembly/
-
-https://people.kth.se/~dbro/x86-64-ref-sheet.pdf
-
-https://www.cs.uaf.edu/2017/fall/cs301/reference/x86_64.html
-
-https://gist.github.com/justinian/385c70347db8aca7ba93e87db90fc9a6
-
-https://www.scribd.com/document/991336592/Intro-to-Assembly-Language-Module-Cheat-Sheet
-
----
-
-[tutorials](https://www.tutorialspoint.com/assembly_programming/assembly_introduction.htm)
-[64-bit assembly](https://medium.com/@rivian96/understanding-16-bit-32-bit-and-64-bit-operand-behavior-in-assembly-70a6e3addf80)
----
-
-
----
 
 The processor supports the following data sizes −
 
@@ -244,17 +254,54 @@ Paragraph: a 16-byte (128 bit) area
 Kilobyte: 1024 bytes
 Megabyte: 1,048,576 bytes
 
+
+
+
+
+
+
+
+## ⚙️Getting Started
+    - Installation and Setup
+    - Compiling Assembly
+    - Assembly Program Structure
+    - Cheat Sheet
+
+<ul><details>
+  <summary id="installationSetup">&nbsp;&nbsp;&nbsp;<strong>Installation and Setup</strong></summary>
+  <br>
+
 ---
 
+</details>
 
-Mental Note:
-- for 42 use NASM assembler
-- must write 64-bit assembly
-- use the Intel syntax, not the AT&T syntax
+<details>
+  <summary id="compilingAssembly">&nbsp;&nbsp;&nbsp;<strong>Compiling Assembly</strong></summary>
+  <br>
 
-Local Environment Setup
-Assembly language is dependent upon the instruction set and the architecture of the processor.
+---
 
+</details>
+
+<details>
+  <summary id="assemblyStructure">&nbsp;&nbsp;&nbsp;<strong>Assembly Program Structure</strong></summary>
+  <br>
+
+---
+
+</details>
+
+<details>
+  <summary id="cheatSheet">&nbsp;&nbsp;&nbsp;<strong>Cheat Sheet</strong></summary>
+  <br>
+
+---
+
+</details></ul>
+
+
+
+## Installation and Setup
 IF you work from home and need to install NASM:
 1) check if it is installed already ("Development Tools" installs it automataclly if you install Linux)
 - Open a Linux terminal.
@@ -270,39 +317,15 @@ IF you work from home and need to install NASM:
 - Type make install to install nasm and ndisasm in /usr/local/bin and to install the man pages.
 
 ---
+---
+
+## Compiling Assembly
+Compiling an Assembly Program in NASM
 
 - .asm: The most common extension used across x86 and embedded systems.
 - .s: Used primarily by GNU tools (like GCC) for standard assembly source files.
 - .S: Also a GNU extension, but indicates to the compiler that the file must first be preprocessed by the C preprocessor before being assembled.
 
----
-
-An assembly program can be divided into three sections −
-- The data section, -> syntax declaring `section.data`
-- The bss section, -> syntax declaring `section.bss`
-- The text section -> syntax declaring 
-``` 
-section.text
-   global _start
-
-_start:
-```
-
-what is does these sections do:
-??????????????????????????????????????????
-
----
-
-Comments
-Assembly language comment begins with a semicolon (;).
-```
-; This program displays a message on screen
-```
-
----
-
-TEST! TEST!
-Compiling an Assembly Program in NASM
 
 1) HELLO WORLD!
 - Create test.s file
@@ -358,6 +381,23 @@ clang hello.o -o hello |
 
 
 
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+COMPILING
+main.s
+make re -> compiles the libary
+nasm -f elf64 main.s -> for compiling the main
+gcc main.o -L. -lasm -no-pie -o testAMS
+/.test -> RUN
+echo $? -> for output
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+main.c
+make re
+gcc main.c -L. -lasm -no-pie -o testC
+
+
+
 After you have assembled and linked your assembly code into an executable named test, you can load and debug it using gdb (GNU Debugger). 
 Here's how you can do it: run `gdb ./TestMe -tui`
 you're invoking GDB (GNU Debugger) with the Text User Interface (TUI) mode enabled. This mode provides a terminal-based graphical interface that splits the screen into two parts
@@ -366,6 +406,35 @@ you're invoking GDB (GNU Debugger) with the Text User Interface (TUI) mode enabl
 2. The bottom part of the screen displays the usual command-line interface of GDB, where you can type commands, set breakpoints, examine memory, view registers, and interact with the debugger.
 
 ---
+---
+
+
+
+## Assembly Program Structure
+
+
+An assembly program can be divided into three sections −
+- The data section, -> syntax declaring `section.data`
+- The bss section, -> syntax declaring `section.bss`
+- The text section -> syntax declaring 
+``` 
+section.text
+   global _start
+
+_start:
+```
+
+what is does these sections do:
+??????????????????????????????????????????
+
+---
+
+Comments
+Assembly language comment begins with a semicolon (;).
+```
+; This program displays a message on screen
+```
+
 
 WHAT is 64-bit assembly?
 
@@ -441,31 +510,7 @@ _start:
 
 ---
 
-ABI
-Machine-code level interface:
-```
-argument in rdi
-return in rax
-stack aligned to 16 bytes
-```
-The compiler cares heavily about ABI rules.
-Assembly programmers must manually follow them.
 
-Important practical rule
-
-For modern Linux x86-64 assembly:
-Use:
-- rax, rdi, rsi, rdx, ...
-- syscall
-- x86-64 syscall numbers
-- System V AMD64 ABI
-
-Avoid:
-- int 0x80
-- old 32-bit syscall tables
-- old ebx/ecx/edx syscall conventions
-
-unless intentionally writing 32-bit code.
 
 ---
 
@@ -521,19 +566,7 @@ macOS uses ___error
 Linux uses __errno_location (sometimes uses __error)
 ---
 
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-COMPILING
-main.s
-make re -> compiles the libary
-nasm -f elf64 main.s -> for compiling the main
-gcc main.o -L. -lasm -no-pie -o testAMS
-/.test -> RUN
-echo $? -> for output
 
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-main.c
-make re
-gcc main.c -L. -lasm -no-pie -o testC
 
 ---
 
@@ -1166,4 +1199,30 @@ Even if your code “seems fine”
 
 
 mov eax, 0			; NO floating-point/vector arguments were passed (for ABI rules) -> xor eax, eax: required for variadic functions
+
+
 ---
+---
+
+
+## ⚙️Resources
+
+https://www.timdbg.com/posts/fakers-guide-to-assembly/
+
+https://people.kth.se/~dbro/x86-64-ref-sheet.pdf
+
+https://www.cs.uaf.edu/2017/fall/cs301/reference/x86_64.html
+
+https://gist.github.com/justinian/385c70347db8aca7ba93e87db90fc9a6
+
+https://www.scribd.com/document/991336592/Intro-to-Assembly-Language-Module-Cheat-Sheet
+
+https://hackaday.io/project/188193-assembly-language-for-ecm-16ttl-homebrew-cpu/log/213335-mnemonics-list
+
+[tutorials](https://www.tutorialspoint.com/assembly_programming/assembly_introduction.htm)
+
+[64-bit assembly](https://medium.com/@rivian96/understanding-16-bit-32-bit-and-64-bit-operand-behavior-in-assembly-70a6e3addf80)
+
+---
+
+-->
