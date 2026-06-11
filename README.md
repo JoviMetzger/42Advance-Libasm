@@ -17,8 +17,8 @@
     - [Cheat Sheet](#cheatSheet)
   - [Resources](#resources)
 
-<br>
 
+---
 
 
 ## ⚙️What is Assembly?
@@ -36,7 +36,7 @@ mov rdi, 5
 add rdi, 3 
 ```
 
-<br><br>
+<br>
 
 Even though modern programming languages are much easier to use, assembly language is still important because it provides: <br>
   * **Very fast and efficient programs**
@@ -44,7 +44,7 @@ Even though modern programming languages are much easier to use, assembly langua
   * **Low memory usage**
   * **Access to processor-specific features**
 
-<br>
+---
 
 ## ⚙️The Assembly Ecosystem
 
@@ -182,17 +182,18 @@ Think of them as different translators for the same language. <br>
 
 ---
 
-</details></ul>
-
 <br>
+
+</details></ul>
 
 #### In Summary:
 **The Processor architecture** determines which **instructions** the CPU understands. <br>
 **Bitness** determines the **size** of registers and **memory addresses** the CPU can work with. <br>
 **Assembler software translates** assembly language **into machine code** for a specific architecture. <br>
 
-<br><br>
+<br>
 
+---
 
 ## ⚙️Intel Syntax vs. AT&T Syntax
 Assembly language can generally be written using two syntax styles: <br><br>
@@ -211,67 +212,77 @@ The underlying instructions are the same, but the notation is different.
 | Originated From  | Intel's official documentation | Early UNIX systems |
 | Commonly Used By | • NASM<br>• MASM<br>• Intel manuals<br>• Windows assembly development | • GAS<br>• GCC output<br>• Older UNIX tools <br> &ensp;|
 
-<br><br>
+---
 
-<!--
 ## ⚙️ABI Rules
-An **Application Binary Interface (ABI)** is a low-level set of rules that defines how compiled machine code communicates with the operating system, hardware, or other compiled libraries.
+An **Application Binary Interface (ABI)** is a low-level set of rules that allows compiled machine code communicates correctly with: <br>
+&emsp; •&nbsp; the operating system <br>
+&emsp; •&nbsp; libraries <br>
+&emsp; •&nbsp; other compiled programs <br>
+&emsp; •&nbsp; hardware interfaces <br> <br>
 
-ABI
-Machine-code level interface:
-```
-argument in rdi
-return in rax
-stack aligned to 16 bytes
-```
-The compiler cares heavily about ABI rules.
-Assembly programmers must manually follow them.
+•&nbsp; **The compiler cares heavily about ABI rules.** <br>
+•&nbsp; **Assembly programmers must follow them manually.** <br>
+•&nbsp; **Without a common ABI, separately compiled code could not reliably work together.**
 
-Important practical rule
+**The ABI defines things such as:** <br>
+&emsp; •&nbsp; Which registers hold function arguments <br>
+&emsp; •&nbsp; Which register holds the return value <br>
+&emsp; •&nbsp; How the stack is organized <br>
+&emsp; •&nbsp; Which registers a function must preserve <br>
+&emsp; •&nbsp; How system calls are made <br>
 
-For modern Linux x86-64 assembly:
-Use:
-- rax, rdi, rsi, rdx, ...
-- syscall
-- x86-64 syscall numbers
-- System V AMD64 ABI
+<br>
 
-Avoid:
-- int 0x80
-- old 32-bit syscall tables
-- old ebx/ecx/edx syscall conventions
+❗ **Important practical rule:** ❗ <br>
+&emsp; 🔺&nbsp; argument in rdi <br>
+&emsp; 🔺&nbsp; return in rax <br>
+&emsp; 🔺&nbsp; stack aligned to 16 bytes <br>
+
+<br>
+
+**Modern Linux x86-64 Guidelines** <br>
+**Use:** <br>
+&emsp; •&nbsp; rax, rdi, rsi, rdx, rcx, r8, r9 <br>
+&emsp; •&nbsp; syscall <br>
+&emsp; •&nbsp; x86-64 syscall numbers <br>
+&emsp; •&nbsp; System V AMD64 ABI <br>
+
+**Avoid:** <br>
+&emsp; •&nbsp; int 0x80 <br>
+&emsp; •&nbsp; 32-bit syscall tables <br>
+&emsp; •&nbsp; eax, ebx, ecx, edx syscall conventions <br>
 
 unless intentionally writing 32-bit code.
 
-
-
-The processor supports the following data sizes −
-
-Word: a 2-byte data item
-Doubleword: a 4-byte (32 bit) data item
-Quadword: an 8-byte (64 bit) data item
-Paragraph: a 16-byte (128 bit) area
-Kilobyte: 1024 bytes
-Megabyte: 1,048,576 bytes
-
-
-
-
-
-
-
+---
 
 ## ⚙️Getting Started
-    - Installation and Setup
-    - Compiling Assembly
-    - Assembly Program Structure
-    - Cheat Sheet
 
 <ul><details>
   <summary id="installationSetup">&nbsp;&nbsp;&nbsp;<strong>Installation and Setup</strong></summary>
   <br>
 
+
+## Installation and Setup
+**IF you work from home and need to install NASM** <br>
+
+#### 1) Check if NASM is installed already ("Development Tools" installs it automataclly if you install Linux)
+- Open a Linux terminal.
+- Type `whereis` nasm and press ENTER.
+- If it is already installed, then a line like, `nasm: /usr/bin/nasm` appears. Otherwise, you will see just `nasm:`, then you need to install NASM.
+
+#### 2) Install NASM:
+- Check The netwide assembler (NASM) website for the latest version.
+- Download your OS(Linux, Window, macOS) source archive `nasm-X.XX.ta.gz`, where `X.XX` is the NASM version number in the archive.
+- Unpack the archive into a directory which creates a subdirectory `nasm-X. XX`.
+- `cd` to `nasm-X.XX` and type `./configure`. This shell script will find the best C compiler to use and set up Makefiles accordingly.
+- Type `make` to build the nasm and ndisasm binaries.
+- Type `make install` to install nasm and ndisasm in `/usr/local/bin` and to install the man pages.
+
 ---
+
+<br>
 
 </details>
 
@@ -279,7 +290,87 @@ Megabyte: 1,048,576 bytes
   <summary id="compilingAssembly">&nbsp;&nbsp;&nbsp;<strong>Compiling Assembly</strong></summary>
   <br>
 
+## Compiling Assembly
+**Compiling an Assembly Program in NASM**
+```
+ •  .asm :  The most common extension used across x86 and embedded systems.
+ •  .s   :  Used primarily by GNU tools *(like GCC)* for standard assembly source files.
+ •  .S   :  A GNU extension, but indicates to the compiler that the file must first be preprocessed by the C preprocessor before being assembled.
+```
+
+#### 1) Create File
+- Create `test.s` file
+- **NOTE:** this example is written in 64-bit assembly
+- **NOTE:** `;` is a comment in Assembly language
+- **NOTE:** If you don't understand what is happening below, **that is okay!** This is only about compiling. <br>But in short this means: **`write(1, msg, len)`**
+```
+global _start                 ;must be declared for linker (ld)
+
+section	.data
+  msg db "Hello world!", 0    ;string to be printed
+  len equ $ - msg             ;length of the string
+
+section	.text
+
+_start:	                      ;tells linker entry point
+   mov  rax, 1                ;system call number (sys_write)
+   mov	rdi, 1                ;file descriptor (stdout)
+   mov	rsi, msg              ;message to write
+   mov	rdx, len              ;message length
+   syscall                    ;call kernel
+	
+   mov	rax, 60               ;system call number (sys_exit)
+   mov  rdi, 0                ;system call number (sys_read)
+   syscall                    ;call kernel
+
+```
+
+#### 2) Compiled and Executed
+&emsp; •&nbsp; **1.** Assemble the program, `nasm -f elf64 test.s` <br>
+&emsp; •&nbsp; **NOTE:**&nbsp;&nbsp;&nbsp;  for linux:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `elf64` <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for windows: `win64`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for macOS:&nbsp;&nbsp;&nbsp; `macho64` <br>
+&emsp; •&nbsp; **2.** **IF THERE IS ANY ERROR**, you will be prompted about that at this stage. *(Just like C/C++)* <br>
+&emsp; •&nbsp; **3.** To link the object file and create an executable file `ld test.o -o TestMe` <br>
+&emsp; •&nbsp; **NOTE:**&nbsp;&nbsp;&nbsp;  `TestMe`: executable name <br>
+&emsp; •&nbsp; **NOTE:**&nbsp;&nbsp;&nbsp;  for Linux: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`ld` <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for Windows: `gcc`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for macOS: &nbsp;&nbsp;&nbsp;&nbsp;`clang`<br>
+&emsp; •&nbsp; **4.** Execute the program by typing `./TestMe` *(just like C/C++)* <br>
+&emsp; •&nbsp; **5.** **OUTPUT** should be `Hello, world!` <br>
+<ul>
+
+**Example:** 
+```
+nasm -f elf64 test.s
+ld test.o -o TestMe
+./TestMe
+```
+
+<br>
+
+
+| OS      | NASM format | Object extension | Linker | Example |
+| ------- | ----------- | ---------------- | ------ | ------- |
+| Linux   | `elf64`     | `.o`             | `ld`   | nasm -f elf64 hello.asm -o hello.o <br> ld hello.o -o hello |
+| Windows | `win64`     | `.obj`           | `gcc`  | nasm -f win64 hello.asm -o hello.obj <br>gcc hello.obj -o hello.exe |
+| macOS   | `macho64`   | `.o`             | `clang` | nasm -f macho64 hello.asm -o hello.o <br>clang hello.o -o hello |
+
+</ul>
+
+#### 3) GNU Debugger (optinal)
+
+After you have assembled and linked your assembly code into an executable named `TestMe`, you can load and debug it using gdb **(GNU Debugger)**. <br><br>
+**Here's how you can do it:** <br>
+&emsp;&emsp;&emsp;&emsp; run `gdb ./TestMe -tui` <br>
+You're invoking **GDB (GNU Debugger)** with the **Text User Interface (TUI)** mode enabled. <br>
+This mode provides a terminal-based graphical interface that splits the screen into **two parts.** <br>
+* **1.** The top part shows your source code *(test.s)* <br>
+* **2.** The bottom part of the screen displays the usual command-line interface of GDB, where you can type commands, set breakpoints, examine memory, view registers, and interact with the debugger.
+
 ---
+
+<br>
 
 </details>
 
@@ -287,7 +378,11 @@ Megabyte: 1,048,576 bytes
   <summary id="assemblyStructure">&nbsp;&nbsp;&nbsp;<strong>Assembly Program Structure</strong></summary>
   <br>
 
+HHH
+
 ---
+
+<br>
 
 </details>
 
@@ -295,120 +390,16 @@ Megabyte: 1,048,576 bytes
   <summary id="cheatSheet">&nbsp;&nbsp;&nbsp;<strong>Cheat Sheet</strong></summary>
   <br>
 
+HHH
+
 ---
+
+<br>
 
 </details></ul>
 
 
-
-## Installation and Setup
-IF you work from home and need to install NASM:
-1) check if it is installed already ("Development Tools" installs it automataclly if you install Linux)
-- Open a Linux terminal.
-- Type whereis nasm and press ENTER.
-- If it is already installed, then a line like, nasm: /usr/bin/nasm appears. Otherwise, you will see just nasm:, then you need to install NASM.
-
-2) Install NASM:
-- Check The netwide assembler (NASM) website for the latest version.
-- Download the Linux source archive nasm-X.XX.ta.gz, where X.XX is the NASM version number in the archive.
-- Unpack the archive into a directory which creates a subdirectory nasm-X. XX.
-- cd to nasm-X.XX and type ./configure. This shell script will find the best C compiler to use and set up Makefiles accordingly.
-- Type make to build the nasm and ndisasm binaries.
-- Type make install to install nasm and ndisasm in /usr/local/bin and to install the man pages.
-
----
----
-
-## Compiling Assembly
-Compiling an Assembly Program in NASM
-
-- .asm: The most common extension used across x86 and embedded systems.
-- .s: Used primarily by GNU tools (like GCC) for standard assembly source files.
-- .S: Also a GNU extension, but indicates to the compiler that the file must first be preprocessed by the C preprocessor before being assembled.
-
-
-1) HELLO WORLD!
-- Create test.s file
-NOTE: this example is for 42 subject, which need to be written in 64-bit assembly.
-NOTE: `;` is a comment in Assembly language
-NOTE: If you don't understand what is happening below, that is okay! This is only about compiling. But in short this means: -> `write(1, msg, len)`
-```
-global _start     ;must be declared for linker (ld)
-
-section	.data
-  msg db "Hello world!", 0   ;string to be printed
-  len equ $ - msg               ;length of the string
-
-section	.text
-
-_start:	            ;tells linker entry point
-   mov   rax,1       ;system call number (sys_write)
-   mov	rdi,1       ;file descriptor (stdout)
-   mov	rsi,msg     ;message to write
-   mov	rdx,len     ;message length
-   syscall           ;call kernel
-	
-   mov	rax,60      ;system call number (sys_exit)
-   mov   rdi,0       ;system call number (sys_read)
-   syscall           ;call kernel
-
-```
-
-2) Compiled and Executed
-NOTE: Make sure that you are in the same directory as where you saved test.s.
-- 1. assemble the program, `nasm -f elf64 test.s`
-- NOTE:  for linux: `elf64`
-         for windows: `win64`
-         for macOS: `macho64`
-- 2. IF THERE IS ANY ERROR, you will be prompted about that at this stage. (Just like C/C++)
-- 3. To link the object file and create an executable file `ld test.o -o TestMe`
-- NOTE:  `TestMe`: executable name
-- NOTE:  for Linux: `ld`
-         for Windows: `gcc`
-         for macOS: `clang`
-- 4. Execute the program by typing `./TestMe` (just like C/C++)
-- 5. OUTPUT should be `Hello, world!`
-
-
-| OS      | NASM format | Object extension | Linker | Example |
-| ------- | ----------- | ---------------- | ------ | ------- |
-| Linux   | `elf64`     | `.o`             | `ld`   | nasm -f elf64 hello.asm -o hello.o
-ld hello.o -o hello |
-| Windows | `win64`     | `.obj`           | `gcc`  | nasm -f win64 hello.asm -o hello.obj
-gcc hello.obj -o hello.exe |
-| macOS   | `macho64`   | `.o`             | `clang` | nasm -f macho64 hello.asm -o hello.o
-clang hello.o -o hello |
-
-
-
-
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-COMPILING
-main.s
-make re -> compiles the libary
-nasm -f elf64 main.s -> for compiling the main
-gcc main.o -L. -lasm -no-pie -o testAMS
-/.test -> RUN
-echo $? -> for output
-
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-main.c
-make re
-gcc main.c -L. -lasm -no-pie -o testC
-
-
-
-After you have assembled and linked your assembly code into an executable named test, you can load and debug it using gdb (GNU Debugger). 
-Here's how you can do it: run `gdb ./TestMe -tui`
-you're invoking GDB (GNU Debugger) with the Text User Interface (TUI) mode enabled. This mode provides a terminal-based graphical interface that splits the screen into two parts
-
-1. The top part shows your source code (test.s)
-2. The bottom part of the screen displays the usual command-line interface of GDB, where you can type commands, set breakpoints, examine memory, view registers, and interact with the debugger.
-
----
----
-
-
+<!--
 
 ## Assembly Program Structure
 
