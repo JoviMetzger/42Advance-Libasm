@@ -17,6 +17,7 @@
     - [Cheat Sheet](#cheatSheet)
   - [Resources](#resources)
 
+<br>
 
 ---
 
@@ -43,6 +44,8 @@ Even though modern programming languages are much easier to use, assembly langua
   * **Direct control over hardware**
   * **Low memory usage**
   * **Access to processor-specific features**
+
+<br>
 
 ---
 
@@ -214,6 +217,8 @@ The underlying instructions are the same, but the notation is different.
 
 ---
 
+<br>
+
 ## ⚙️ABI Rules
 An **Application Binary Interface (ABI)** is a low-level set of rules that allows compiled machine code communicates correctly with: <br>
 &emsp; •&nbsp; the operating system <br>
@@ -258,6 +263,11 @@ unless intentionally writing 32-bit code.
 ---
 
 ## ⚙️Getting Started
+
+I recommend reading through [A Faker's Guide to Assembly](https://www.timdbg.com/posts/fakers-guide-to-assembly/). It introduces the **30 most common instruction types**, which helps you understand what instructions exist and serves as a useful reference once you start writing assembly yourself.
+
+<br>
+
 
 <ul><details>
   <summary id="installationSetup">&nbsp;&nbsp;&nbsp;<strong>Installation and Setup</strong></summary>
@@ -304,13 +314,12 @@ unless intentionally writing 32-bit code.
 - **NOTE:** `;` is a comment in Assembly language
 - **NOTE:** If you don't understand what is happening below, **that is okay!** This is only about compiling. <br>But in short this means: **`write(1, msg, len)`**
 ```
-global _start                 ;must be declared for linker (ld)
+section	.text
+	global _start             ;must be declared for linker (ld)
 
 section	.data
   msg db "Hello world!", 0    ;string to be printed
   len equ $ - msg             ;length of the string
-
-section	.text
 
 _start:	                      ;tells linker entry point
    mov  rax, 1                ;system call number (sys_write)
@@ -361,12 +370,18 @@ ld test.o -o TestMe
 #### 3) GNU Debugger (optinal)
 
 After you have assembled and linked your assembly code into an executable named `TestMe`, you can load and debug it using gdb **(GNU Debugger)**. <br><br>
-**Here's how you can do it:** <br>
-&emsp;&emsp;&emsp;&emsp; run `gdb ./TestMe -tui` <br>
+**Here's how you can do it:** &emsp; run `gdb ./TestMe -tui` <br> <br>
 You're invoking **GDB (GNU Debugger)** with the **Text User Interface (TUI)** mode enabled. <br>
 This mode provides a terminal-based graphical interface that splits the screen into **two parts.** <br>
 * **1.** The top part shows your source code *(test.s)* <br>
 * **2.** The bottom part of the screen displays the usual command-line interface of GDB, where you can type commands, set breakpoints, examine memory, view registers, and interact with the debugger.
+
+<br><br>
+
+The Medium article, [Understanding 16-bit, 32-bit, and 64-bit Operand Behavior](https://medium.com/@rivian96/understanding-16-bit-32-bit-and-64-bit-operand-behavior-in-assembly-70a6e3addf80), focuses more on register sizes and operand behavior. It also includes an introduction to using the **GNU Debugger (GDB)**, which may be useful if you're interested in debugging assembly programs. 
+
+<br>
+
 
 ---
 
@@ -1192,28 +1207,22 @@ Even if your code “seems fine”
 mov eax, 0			; NO floating-point/vector arguments were passed (for ABI rules) -> xor eax, eax: required for variadic functions
 
 
----
----
+-->
 
+---
 
 ## ⚙️Resources
 
-https://www.timdbg.com/posts/fakers-guide-to-assembly/
+- Fundamentals (Basic Info)
+  - [A Faker's Guide to Assembly](https://www.timdbg.com/posts/fakers-guide-to-assembly/)
+  - [Understanding 16-bit, 32-bit, and 64-bit Operand Behavior](https://medium.com/@rivian96/understanding-16-bit-32-bit-and-64-bit-operand-behavior-in-assembly-70a6e3addf80)
 
-https://people.kth.se/~dbro/x86-64-ref-sheet.pdf
+<br>
 
-https://www.cs.uaf.edu/2017/fall/cs301/reference/x86_64.html
+- Cheat Sheets & References (x86-64 / NASM)
+  - [x64 NASM Cheat Sheet](https://gist.github.com/justinian/385c70347db8aca7ba93e87db90fc9a6)
+  - [x86-64 Reference Sheet (PDF)](https://people.kth.se/~dbro/x86-64-ref-sheet.pdf)
+  - [x86-64 Quick Reference](https://www.cs.uaf.edu/2017/fall/cs301/reference/x86_64.html)
+  - [Assembly Mnemonics List](https://hackaday.io/project/188193-assembly-language-for-ecm-16ttl-homebrew-cpu/log/213335-mnemonics-list)
 
-https://gist.github.com/justinian/385c70347db8aca7ba93e87db90fc9a6
-
-https://www.scribd.com/document/991336592/Intro-to-Assembly-Language-Module-Cheat-Sheet
-
-https://hackaday.io/project/188193-assembly-language-for-ecm-16ttl-homebrew-cpu/log/213335-mnemonics-list
-
-[tutorials](https://www.tutorialspoint.com/assembly_programming/assembly_introduction.htm)
-
-[64-bit assembly](https://medium.com/@rivian96/understanding-16-bit-32-bit-and-64-bit-operand-behavior-in-assembly-70a6e3addf80)
-
----
-
--->
+<br>
