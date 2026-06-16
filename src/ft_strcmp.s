@@ -1,6 +1,5 @@
-global ft_strcmp
-
 section .text
+	global ft_strcmp
 
 ft_strcmp:
 	xor rcx, rcx			; rcx: index 1 = 0 (start comparing from first character)

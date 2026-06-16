@@ -1,86 +1,408 @@
-# Assembly
-<!--
-Mental Note:
-- for 42 use NASM assembler
-- must write 64-bit assembly
-- use the Intel syntax, not the AT&T syntax
+# 🛠️🔩 Assembly 🛠️🔩
 
+<br><br>
 
+## Table of Contents
+  - [What is Assembly?](#what-is-assembly?)
+  - [The Assembly Ecosystem](#the-assembly-ecosystem)
+      - [Processor architecture *(x86, ARM, RISC-V)*](#processorArchitecture)
+      - [Bitness *(16-bit, 32-bit, 64-bit)*](#bitness)
+      - [Assembler Software *(NASM, MASM, GAS)*](#assemblerSoftware)
+  - [Intel Syntax vs. AT&T Syntax](#intel-syntax-vs.-AT&T-syntax)
+  - [ABI Rules](#ABI-rules)
+  - [Getting Started](#getting-started)
+    - [Installation and Setup](#installationSetup)
+    - [Compiling Assembly](#compilingAssembly)
+    - [Assembly Program Structure](#assemblyStructure)
+    - [Cheat Sheet](#cheatSheet)
+  - [Resources](#resources)
 
-
-https://www.timdbg.com/posts/fakers-guide-to-assembly/
-
-https://people.kth.se/~dbro/x86-64-ref-sheet.pdf
-
-https://www.cs.uaf.edu/2017/fall/cs301/reference/x86_64.html
-
-https://gist.github.com/justinian/385c70347db8aca7ba93e87db90fc9a6
-
-https://www.scribd.com/document/991336592/Intro-to-Assembly-Language-Module-Cheat-Sheet
 
 ---
 
-[tutorials](https://www.tutorialspoint.com/assembly_programming/assembly_introduction.htm)
-[64-bit assembly](https://medium.com/@rivian96/understanding-16-bit-32-bit-and-64-bit-operand-behavior-in-assembly-70a6e3addf80)
+
+## ⚙️What is Assembly?
+Every computer has a **processor (CPU)** that performs calculations, makes decisions, and controls how the computer works. <br>
+
+A processor can only understand instructions written in **machine language**, <br>which consists of binary numbers (**0s and 1s**). <br>
+***For Example:*** *`10110000 01100001`* <br>
+
+Computers can read machine language directly, but it is extremely difficult for humans to write, read, and debug. <br> Because of this, **assembly language** was created.<br>
+
+Assembly provides a human readable representation of machine instructions, allowing programmers to communicate directly with the processor using short, readable commands called **mnemonics**. <br>
+***For Example:*** 
+```
+mov rdi, 5
+add rdi, 3 
+```
+
+<br>
+
+Even though modern programming languages are much easier to use, assembly language is still important because it provides: <br>
+  * **Very fast and efficient programs**
+  * **Direct control over hardware**
+  * **Low memory usage**
+  * **Access to processor-specific features**
+
 ---
 
-Each personal computer has a microprocessor that manages the computer's arithmetical, logical, and control activities.
+## ⚙️The Assembly Ecosystem
 
-Each family of processors has its own set of instructions for handling various operations such as getting input from keyboard, displaying information on screen and performing various other jobs. These set of instructions are called 'machine language instructions'.
+In assembly programming, there are three important concepts:
 
-A processor understands only machine language instructions, which are strings of 1's and 0's. However, machine language is too obscure and complex for using in software development. So, the low-level assembly language is designed for a specific family of processors that represents various instructions in symbolic code and a more understandable form.
+<ul><details>
+  <summary id="processorArchitecture">&nbsp;&nbsp;&nbsp;<strong>Processor architecture</strong> <i>(x86, ARM, RISC-V)</i> </summary>
+  <br>
+
+## Processor architecture
+Each processor architecture *(such as x86, ARM, or RISC-V)* has its own **instruction set architecture (ISA)**.<br>
+
+A processor architecture defines the instruction set, **registers, memory-access rules**, and other features that software uses to communicate with the CPU. Because different architectures use different instruction sets, assembly language written for one architecture *(such as x86-64)* generally cannot run directly on another architecture *(such as ARM or RISC-V)*. <br> <br>
+
+**Processors Architecture Type:**
+```
+ •  x86-64  – Used in most desktop and laptop computers
+ •  ARM     – Used in smartphones, tablets, and many embedded systems
+ •  RISC-V  – An open-source processor architecture that allows anyone to design compatible processors without licensing fees
+```
+<br>
+
+Each architecture has its own assembly language. <br>
+**For example:** <br>
+```
+x86 assembly   |   ARM assembly
+-------------- | ---------------
+mov eax, 5     |   MOV R0, #5
+add eax, 3     |   ADD R0, R0, #3
+
+```
+**Both programs do the same thing:** `5 + 3 = 8`<br>
+
+The instructions look different because the processors are different. <br>
+Assembly code written for one processor architecture will usually not work on another without modification.
 
 ---
 
-The processor supports the following data sizes −
+<br>
 
-Word: a 2-byte data item
-Doubleword: a 4-byte (32 bit) data item
-Quadword: an 8-byte (64 bit) data item
-Paragraph: a 16-byte (128 bit) area
-Kilobyte: 1024 bytes
-Megabyte: 1,048,576 bytes
+</details>
+
+<details>
+  <summary id="bitness">&nbsp;&nbsp;&nbsp;<strong>Bitness</strong> <i>(16-bit, 32-bit, 64-bit)</i></summary>
+  <br>
+
+## Bitness
+
+Bitness describes the width of a processor's general-purpose registers and the address size supported by an architecture. It influences how much data can be handled efficiently and how memory addressing works, but it does not define the instruction set architecture. Different architectures can have the same bitness while using completely different instruction sets.
+
+**For example:** <br>
+x86-64 has instructions that 32-bit x86 doesn't. <br>
+But two different 64-bit architectures *(x86-64 and ARM64)* have completely different instruction sets despite having the same bitness.
+
+
+**The "bitness" mainly determines:** <br>
+&emsp; •&nbsp; Register size<br>
+&emsp; •&nbsp; Memory address size<br>
+&emsp; •&nbsp; The size of data the CPU can process in a single operation<br><br><br>
+
+➡️ **The different bit versions:**
+```
+  • 16-bit
+  • 32-bit
+  • 64-bit
+```
+<br>
+
+➡️ **The different processors versions:**
+```
+The evolution of the x86 family:
+
+x86 family
+ ├─ 16-bit (8086, 80286)
+ ├─ 32-bit (80386, 80486, Pentium)
+ └─ 64-bit (x86-64 / AMD64)
+
+----------------------------------
+
+The evolution of the ARM family:
+
+ARM family
+ ├─ 32-bit (ARM / AArch32)
+ └─ 64-bit (ARM64 / AArch64)
+```
+❗**NOTE:**❗ <br>
+The names inside the parentheses are examples of processors or architecture versions belonging to that family and bitness. <br>  
 
 ---
 
-Local Environment Setup
-Assembly language is dependent upon the instruction set and the architecture of the processor. In this tutorial, we focus on Intel-32 processors like Pentium. To follow this tutorial, you will need −
+<br>
 
-- An IBM PC or any equivalent compatible computer
-- A copy of Linux operating system
-- A copy of NASM assembler program
 
-There are many good assembler programs, such as −
-- Microsoft Assembler (MASM)
-- Borland Turbo Assembler (TASM)
-- The GNU assembler (GAS)
+</details>
 
-We will use the NASM assembler, as it is −
-- Free. You can download it from various web sources.
-- Well documented and you will get lots of information on net.
-- Could be used on both Linux and Windows.
+<details>
+  <summary id="assemblerSoftware">&nbsp;&nbsp;&nbsp;<strong>Assembler software</strong> <i>(NASM, MASM, GAS)</i></summary>
+  <br>
 
-IF you work from home and need to install NASM:
-1) check if it is installed already ("Development Tools" installs it automataclly if you install Linux)
+## Assembler software
+Before a computer can run an assembly program, it must be translated into machine language by a program called an assembler.
+An assembler is simply a program that translates assembly language into machine code.<br>
+
+Assemblers Software all target the same processor family but use slightly different syntax and features. <br>
+Think of them as different translators for the same language. <br>
+
+**Assemblers for the x86 architecture:** <br>
+&emsp; •&nbsp; Microsoft Macro Assembler **(MASM)** <br>
+&emsp; •&nbsp; Borland Turbo Assembler **(TASM)** <br>
+&emsp; •&nbsp; GNU Assembler **(GAS)** <br>
+&emsp; •&nbsp; Netwide Assembler **(NASM)** <br><br>
+
+**Assemblers for the ARM architecture:** <br>
+&emsp; •&nbsp; GNU Assembler **(GAS)** <br>
+&emsp; •&nbsp; ARMASM **(Arm Compiler Assembler)** <br>
+&emsp; •&nbsp; LLVM Integrated Assembler **(Clang)** <br><br>
+
+**Assemblers for the RISC-V architecture:** <br>
+&emsp; •&nbsp; GNU Assembler **(GAS)** <br>
+&emsp; •&nbsp; LLVM Integrated Assembler **(Clang)** <br>
+&emsp; •&nbsp; RISC-V GNU Toolchain Assembler <br><br>
+
+### ❓ What assembler should I use for x86-64❓
+**For a beginner:** <br>
+&emsp; •&nbsp; Processor: x86-64 <br>
+&emsp; •&nbsp; Assembler: NASM <br>
+&emsp; •&nbsp; Operating System: Windows or Linux <br>
+
+**NASM assembler because it is:** <br>
+&emsp; •&nbsp; Free and open source <br>
+&emsp; •&nbsp; Well documented <br>
+&emsp; •&nbsp; Widely used in tutorials and educational material <br>
+&emsp; •&nbsp; Available on Linux, macOS and Windows <br>
+&emsp; •&nbsp; Easy for beginners to learn <br>
+
+---
+
+<br>
+
+</details></ul>
+
+#### In Summary:
+**The Processor architecture** determines which **instructions** the CPU understands. <br>
+**Bitness** determines the **size** of registers and **memory addresses** the CPU can work with. <br>
+**Assembler software translates** assembly language **into machine code** for a specific architecture. <br>
+
+<br>
+
+---
+
+## ⚙️Intel Syntax vs. AT&T Syntax
+Assembly language can generally be written using two syntax styles: <br><br>
+1️⃣ **Intel syntax** <br>
+2️⃣ **AT&T syntax** <br><br>
+The underlying instructions are the same, but the notation is different.
+
+
+|           | Intel Syntax | AT&T Syntax |
+| --------- | ------------ | ----------- |
+| Example 1 | `mov rax, 5` | `mov $5, %rax` |
+| Example 2 | `mov rax, rbx` | `mov %rbx, %rax` |
+| Meaning *(Example 2)* | Move the contents of `rbx` into `rax`<br>`rax = rbx`                  | Move the contents of `rbx` into `rax`<br>`rax = rbx` |
+| Operand Order         | `mov destination, source`                                             | `mov source, destination`                            |
+| Special Symbols       | None | `%` = register syntax &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&nbsp;**→** `%rax`<br>`$` = constant *(immediate value)* **→** `$5` |
+| Originated From  | Intel's official documentation | Early UNIX systems |
+| Commonly Used By | • NASM<br>• MASM<br>• Intel manuals<br>• Windows assembly development | • GAS<br>• GCC output<br>• Older UNIX tools <br> &ensp;|
+
+---
+
+## ⚙️ABI Rules
+An **Application Binary Interface (ABI)** is a low-level set of rules that allows compiled machine code communicates correctly with: <br>
+&emsp; •&nbsp; the operating system <br>
+&emsp; •&nbsp; libraries <br>
+&emsp; •&nbsp; other compiled programs <br>
+&emsp; •&nbsp; hardware interfaces <br> <br>
+
+•&nbsp; **The compiler cares heavily about ABI rules.** <br>
+•&nbsp; **Assembly programmers must follow them manually.** <br>
+•&nbsp; **Without a common ABI, separately compiled code could not reliably work together.**
+
+**The ABI defines things such as:** <br>
+&emsp; •&nbsp; Which registers hold function arguments <br>
+&emsp; •&nbsp; Which register holds the return value <br>
+&emsp; •&nbsp; How the stack is organized <br>
+&emsp; •&nbsp; Which registers a function must preserve <br>
+&emsp; •&nbsp; How system calls are made <br>
+
+<br>
+
+❗ **Important practical rule:** ❗ <br>
+&emsp; 🔺&nbsp; argument in rdi <br>
+&emsp; 🔺&nbsp; return in rax <br>
+&emsp; 🔺&nbsp; stack aligned to 16 bytes <br>
+
+<br>
+
+**Modern Linux x86-64 Guidelines** <br>
+**Use:** <br>
+&emsp; •&nbsp; rax, rdi, rsi, rdx, rcx, r8, r9 <br>
+&emsp; •&nbsp; syscall <br>
+&emsp; •&nbsp; x86-64 syscall numbers <br>
+&emsp; •&nbsp; System V AMD64 ABI <br>
+
+**Avoid:** <br>
+&emsp; •&nbsp; int 0x80 <br>
+&emsp; •&nbsp; 32-bit syscall tables <br>
+&emsp; •&nbsp; eax, ebx, ecx, edx syscall conventions <br>
+
+unless intentionally writing 32-bit code.
+
+---
+
+## ⚙️Getting Started
+
+<ul><details>
+  <summary id="installationSetup">&nbsp;&nbsp;&nbsp;<strong>Installation and Setup</strong></summary>
+  <br>
+
+
+## Installation and Setup
+**IF you work from home and need to install NASM** <br>
+
+#### 1) Check if NASM is installed already ("Development Tools" installs it automataclly if you install Linux)
 - Open a Linux terminal.
-- Type whereis nasm and press ENTER.
-- If it is already installed, then a line like, nasm: /usr/bin/nasm appears. Otherwise, you will see just nasm:, then you need to install NASM.
+- Type `whereis` nasm and press ENTER.
+- If it is already installed, then a line like, `nasm: /usr/bin/nasm` appears. Otherwise, you will see just `nasm:`, then you need to install NASM.
 
-2) Install NASM:
+#### 2) Install NASM:
 - Check The netwide assembler (NASM) website for the latest version.
-- Download the Linux source archive nasm-X.XX.ta.gz, where X.XX is the NASM version number in the archive.
-- Unpack the archive into a directory which creates a subdirectory nasm-X. XX.
-- cd to nasm-X.XX and type ./configure. This shell script will find the best C compiler to use and set up Makefiles accordingly.
-- Type make to build the nasm and ndisasm binaries.
-- Type make install to install nasm and ndisasm in /usr/local/bin and to install the man pages.
+- Download your OS(Linux, Window, macOS) source archive `nasm-X.XX.ta.gz`, where `X.XX` is the NASM version number in the archive.
+- Unpack the archive into a directory which creates a subdirectory `nasm-X. XX`.
+- `cd` to `nasm-X.XX` and type `./configure`. This shell script will find the best C compiler to use and set up Makefiles accordingly.
+- Type `make` to build the nasm and ndisasm binaries.
+- Type `make install` to install nasm and ndisasm in `/usr/local/bin` and to install the man pages.
 
 ---
 
-- .asm: The most common extension used across x86 and embedded systems.
-- .s: Used primarily by GNU tools (like GCC) for standard assembly source files.
-- .S: Also a GNU extension, but indicates to the compiler that the file must first be preprocessed by the C preprocessor before being assembled.
+<br>
+
+</details>
+
+<details>
+  <summary id="compilingAssembly">&nbsp;&nbsp;&nbsp;<strong>Compiling Assembly</strong></summary>
+  <br>
+
+## Compiling Assembly
+**Compiling an Assembly Program in NASM**
+```
+ •  .asm :  The most common extension used across x86 and embedded systems.
+ •  .s   :  Used primarily by GNU tools *(like GCC)* for standard assembly source files.
+ •  .S   :  A GNU extension, but indicates to the compiler that the file must first be preprocessed by the C preprocessor before being assembled.
+```
+
+#### 1) Create File
+- Create `test.s` file
+- **NOTE:** this example is written in 64-bit assembly
+- **NOTE:** `;` is a comment in Assembly language
+- **NOTE:** If you don't understand what is happening below, **that is okay!** This is only about compiling. <br>But in short this means: **`write(1, msg, len)`**
+```
+global _start                 ;must be declared for linker (ld)
+
+section	.data
+  msg db "Hello world!", 0    ;string to be printed
+  len equ $ - msg             ;length of the string
+
+section	.text
+
+_start:	                      ;tells linker entry point
+   mov  rax, 1                ;system call number (sys_write)
+   mov	rdi, 1                ;file descriptor (stdout)
+   mov	rsi, msg              ;message to write
+   mov	rdx, len              ;message length
+   syscall                    ;call kernel
+	
+   mov	rax, 60               ;system call number (sys_exit)
+   mov  rdi, 0                ;system call number (sys_read)
+   syscall                    ;call kernel
+
+```
+
+#### 2) Compiled and Executed
+&emsp; •&nbsp; **1.** Assemble the program, `nasm -f elf64 test.s` <br>
+&emsp; •&nbsp; **NOTE:**&nbsp;&nbsp;&nbsp;  for linux:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `elf64` <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for windows: `win64`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for macOS:&nbsp;&nbsp;&nbsp; `macho64` <br>
+&emsp; •&nbsp; **2.** **IF THERE IS ANY ERROR**, you will be prompted about that at this stage. *(Just like C/C++)* <br>
+&emsp; •&nbsp; **3.** To link the object file and create an executable file `ld test.o -o TestMe` <br>
+&emsp; •&nbsp; **NOTE:**&nbsp;&nbsp;&nbsp;  `TestMe`: executable name <br>
+&emsp; •&nbsp; **NOTE:**&nbsp;&nbsp;&nbsp;  for Linux: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`ld` <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for Windows: `gcc`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for macOS: &nbsp;&nbsp;&nbsp;&nbsp;`clang`<br>
+&emsp; •&nbsp; **4.** Execute the program by typing `./TestMe` *(just like C/C++)* <br>
+&emsp; •&nbsp; **5.** **OUTPUT** should be `Hello, world!` <br>
+<ul>
+
+**Example:** 
+```
+nasm -f elf64 test.s
+ld test.o -o TestMe
+./TestMe
+```
+
+<br>
+
+
+| OS      | NASM format | Object extension | Linker | Example |
+| ------- | ----------- | ---------------- | ------ | ------- |
+| Linux   | `elf64`     | `.o`             | `ld`   | nasm -f elf64 hello.asm -o hello.o <br> ld hello.o -o hello |
+| Windows | `win64`     | `.obj`           | `gcc`  | nasm -f win64 hello.asm -o hello.obj <br>gcc hello.obj -o hello.exe |
+| macOS   | `macho64`   | `.o`             | `clang` | nasm -f macho64 hello.asm -o hello.o <br>clang hello.o -o hello |
+
+</ul>
+
+#### 3) GNU Debugger (optinal)
+
+After you have assembled and linked your assembly code into an executable named `TestMe`, you can load and debug it using gdb **(GNU Debugger)**. <br><br>
+**Here's how you can do it:** <br>
+&emsp;&emsp;&emsp;&emsp; run `gdb ./TestMe -tui` <br>
+You're invoking **GDB (GNU Debugger)** with the **Text User Interface (TUI)** mode enabled. <br>
+This mode provides a terminal-based graphical interface that splits the screen into **two parts.** <br>
+* **1.** The top part shows your source code *(test.s)* <br>
+* **2.** The bottom part of the screen displays the usual command-line interface of GDB, where you can type commands, set breakpoints, examine memory, view registers, and interact with the debugger.
 
 ---
+
+<br>
+
+</details>
+
+<details>
+  <summary id="assemblyStructure">&nbsp;&nbsp;&nbsp;<strong>Assembly Program Structure</strong></summary>
+  <br>
+
+HHH
+
+---
+
+<br>
+
+</details>
+
+<details>
+  <summary id="cheatSheet">&nbsp;&nbsp;&nbsp;<strong>Cheat Sheet</strong></summary>
+  <br>
+
+HHH
+
+---
+
+<br>
+
+</details></ul>
+
+
+<!--
+
+## Assembly Program Structure
+
 
 An assembly program can be divided into three sections −
 - The data section, -> syntax declaring `section.data`
@@ -93,6 +415,9 @@ section.text
 _start:
 ```
 
+what is does these sections do:
+??????????????????????????????????????????
+
 ---
 
 Comments
@@ -101,71 +426,6 @@ Assembly language comment begins with a semicolon (;).
 ; This program displays a message on screen
 ```
 
----
-
-TEST! TEST!
-Compiling an Assembly Program in NASM
-
-1) HELLO WORLD!
-- Create test.s file
-NOTE: this example is for 42 subject, which need to be written in 64-bit assembly.
-NOTE: `;` is a comment in Assembly language
-NOTE: If you don't understand what is happening below, that is okay! This is only about compiling. But in short this means: -> `write(1, msg, len)`
-```
-global _start     ;must be declared for linker (ld)
-section	.text
-	
-_start:	            ;tells linker entry point
-   mov   rax,1       ;system call number (sys_write)
-   mov	rdi,1       ;file descriptor (stdout)
-   mov	rsi,msg     ;message to write
-   mov	rdx,len     ;message length
-   syscall           ;call kernel
-	
-   mov	rax,60      ;system call number (sys_exit)
-   mov   rdi,0       ;system call number (sys_read)
-   syscall           ;call kernel
-
-section	.data
-msg db 'Hello, world!', 0xa  ;string to be printed
-len equ $ - msg     ;length of the string
-```
-
-2) Compiled and Executed
-NOTE: Make sure that you are in the same directory as where you saved test.s.
-- 1. assemble the program, `nasm -f elf64 test.s`
-- NOTE:  for linux: `elf64`
-         for windows: `win64`
-         for macOS: `macho64`
-- 2. IF THERE IS ANY ERROR, you will be prompted about that at this stage. (Just like C/C++)
-- 3. To link the object file and create an executable file `ld test.o -o TestMe`
-- NOTE:  `TestMe`: executable name
-- NOTE:  for Linux: `ld`
-         for Windows: `gcc`
-         for macOS: `clang`
-- 4. Execute the program by typing `./TestMe` (just like C/C++)
-- 5. OUTPUT should be `Hello, world!`
-
-
-| OS      | NASM format | Object extension | Linker | Example |
-| ------- | ----------- | ---------------- | ------ | ------- |
-| Linux   | `elf64`     | `.o`             | `ld`   | nasm -f elf64 hello.asm -o hello.o
-ld hello.o -o hello |
-| Windows | `win64`     | `.obj`           | `gcc`  | nasm -f win64 hello.asm -o hello.obj
-gcc hello.obj -o hello.exe |
-| macOS   | `macho64`   | `.o`             | `clang` | nasm -f macho64 hello.asm -o hello.o
-clang hello.o -o hello |
-
-
-
-After you have assembled and linked your assembly code into an executable named test, you can load and debug it using gdb (GNU Debugger). 
-Here's how you can do it: run `gdb ./TestMe -tui`
-you're invoking GDB (GNU Debugger) with the Text User Interface (TUI) mode enabled. This mode provides a terminal-based graphical interface that splits the screen into two parts
-
-1. The top part shows your source code (test.s)
-2. The bottom part of the screen displays the usual command-line interface of GDB, where you can type commands, set breakpoints, examine memory, view registers, and interact with the debugger.
-
----
 
 WHAT is 64-bit assembly?
 
@@ -241,31 +501,7 @@ _start:
 
 ---
 
-ABI
-Machine-code level interface:
-```
-argument in rdi
-return in rax
-stack aligned to 16 bytes
-```
-The compiler cares heavily about ABI rules.
-Assembly programmers must manually follow them.
 
-Important practical rule
-
-For modern Linux x86-64 assembly:
-Use:
-- rax, rdi, rsi, rdx, ...
-- syscall
-- x86-64 syscall numbers
-- System V AMD64 ABI
-
-Avoid:
-- int 0x80
-- old 32-bit syscall tables
-- old ebx/ecx/edx syscall conventions
-
-unless intentionally writing 32-bit code.
 
 ---
 
@@ -306,57 +542,6 @@ syscall
 
 ---
 
-You must use the Intel syntax, not the AT&T syntax
-
-Assembly language can generally be categorized into two main syntax conventions: Intel syntax and AT&T syntax. These two syntaxes differ primarily in how they represent assembly instructions and operands.
-
-Intel syntax
-```mov rax, rbx``` 
-means: `rax = rbx` or `move rbx INTO rax` -> mov destination, source.
-
-AT&T syntax
-```mov %rbx, %rax```
-means: `rax = rbx` or `move rbx INTO rax` -> mov source, destination (This confuses many beginners)
-
-example:
-Intel
-`mov rax, 5`
-
-AT&T
-Constants start with $
-`mov $5, %rax`
-
-Intel syntax came from Intel documentation
-
-This became standard in:
-- MASM
-- NASM
-- Windows assembly tutorials
-- Intel manuals
-It is now the most beginner-friendly syntax.
-
-AT&T syntax came from UNIX
-
-AT&T syntax was used in:
-- early UNIX systems
-- GNU assembler (gas)
-- GCC toolchain
-
-So Linux/UNIX tooling historically used AT&T syntax.
-That is why:
-- objdump
-- older GCC assembly output
-- some debugger output
-
-Why would someone use AT&T today?
-
-Usually because:
-- GNU tools default to it
-- older UNIX documentation uses it
-- existing codebases use it
-- compiler-generated assembly often uses it
-Not because it is easier.
-Even many experienced Linux programmers prefer Intel syntax today.
 
 ---
 
@@ -369,22 +554,10 @@ Even many experienced Linux programmers prefer Intel syntax today.
 ---
 
 macOS uses ___error
-Linux uses ___errno (or __errno_location in many cases)
+Linux uses __errno_location (sometimes uses __error)
 ---
 
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-COMPILING
-main.s
-make re -> compiles the libary
-nasm -f elf64 main.s -> for compiling the main
-gcc main.o -L. -lasm -no-pie -o testAMS
-/.test -> RUN
-echo $? -> for output
 
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-main.c
-make re
-gcc main.c -L. -lasm -no-pie -o testC
 
 ---
 
@@ -424,131 +597,27 @@ syscall
 ```
 ---
 
-User: ; --- ssize_t ft_read(int fd, void *buf, size_t count); ---
-	mov rdi, filename		; fd = filename
-	mov rsi, 0				; O_RDONLY
-	call open				; call open()
-
-	mov rax, 60
-	syscall
-
-	mov rdi, rdi			; open fd -> what fucntion open() returned
-	mov rsi, buffer			; buf[100] -> buffer resb 100
-	call ft_read			; call ft_read()
-
-	mov rax, 60
-	syscall
-
-	can you help me fix my main for testing ft_read
-
-GitHub Copilot: I’m checking the current test harness and the `ft_read` implementation shape so I can fix the call site with the smallest possible change. The likely issue is the harness is mixing up `open` and `ft_read` calling conventions, so I’ll verify the actual register expectations before editing.
-
-Read [](file:///home/jmetzger/Documents/Advanced/Libasm/main.s)
-
-Read [](file:///home/jmetzger/Documents/Advanced/Libasm/src/ft_read.s)
-
-Read [](file:///home/jmetzger/Documents/Advanced/Libasm/src/ft_write.s)
-
-I confirmed the bug: the harness exits immediately after `open`, and it never passes the returned file descriptor or a read size into `ft_read`. I’m switching it to a straight open → read → write → exit flow so you can actually observe the result.
-
-Apply Patch
-
-The first edit attempt failed on patch formatting, so I’m reapplying the same small fix cleanly. After that I’ll do a focused validation by reading the updated harness and checking it matches the intended call sequence.
-
-Generating patch (47 lines) in [](file:///home/jmetzger/Documents/Advanced/Libasm/main.s)
 
 
-```
-
-```
-The harness is patched; now I’m doing the cheapest real validation, which is a build. That will catch any register or syntax mistakes immediately instead of guessing from the diff.
-
-Ran terminal command:  make
-
-Made changes.
-
-User: what does, push rbp
-	mov rbp, rsp mean?
-
-GitHub Copilot: `push rbp` saves the caller’s old base/frame pointer on the stack.
+what does, 'push rbp' mean?
+`push rbp` saves the caller’s old base/frame pointer on the stack.
 
 `mov rbp, rsp` then makes `rbp` point to the current stack top, so the function can use `rbp` as a stable reference for its local stack frame.
 
 Together, they form a common function prologue. In your main.s, it also conveniently realigns the stack before you call libc functions like `open` and `ft_write`.
 
-If you want, I can also show what the matching `pop rbp` / `leave` would do on return.
 
-User: would this be correct?
-; --- size_t ft_strlen(const char *s) ---
-	;mov rdi, src		; input string (devined at the top)
-	;call ft_strlen		; ft_strlen() function call
 
-	;mov rdi, 1 		; stdout
-	;mov rdi, rax		; return from ft_strlen()
-	;mov rdx, len 		; src 
-	;call ft_write		; call ft_write()
 
-	;mov rax, 60		; exit(0)
-	;syscall
-
-GitHub Copilot: Not as written.
-
-`ft_write(fd, buf, count)` needs the buffer pointer in `rsi`, but your snippet overwrites `rdi` twice and never sets `rsi`. If the goal is to print the original string, it should be:
-
-```asm
-mov rdi, 1
-mov rsi, src
-mov rdx, len
-call ft_write
 ```
-
-If the goal is to print the return value of `ft_strlen`, that won’t work directly because `ft_strlen` returns a number in `rax`, not a string buffer. You’d need to convert that number to text first.
-
-Your `exit(0)` part is fine:
-```asm
-mov rax, 60
-syscall
-```
-
-If you want, I can rewrite this block in main.s so it cleanly tests `ft_strlen` first, then `ft_write`.
-
-User: can you give me the correct version:
-;mov rdi, src		; input string (devined at the top)
-	;call ft_strlen		; ft_strlen() function call
-
-	;mov rdi, 1 		; stdout
-	;mov rdi, rax		; return from ft_strlen()
-	;mov rdx, len 		; src 
-	;call ft_write		; call ft_write()
-
-	;mov rax, 60		; exit(0)
-	;syscall
-
-GitHub Copilot: Yes. If your goal is to call `ft_strlen` and then print the original string, the corrected block is:
-
-```asm
-mov rdi, src
-call ft_strlen
-
-mov rdi, 1
-mov rsi, src
-mov rdx, len
-call ft_write
-
 mov rax, 60
 xor edi, edi
 syscall
 ```
-
-If you want to test the return value of `ft_strlen` itself, that value is in `rax`, but it is not directly printable with `ft_write` because `ft_write` expects a buffer address in `rsi`, not a number.
-
-User: mov rax, 60
-xor edi, edi
-syscall
 mov rax, 60 = exit(0);
 what is xor edi, edi
 
-GitHub Copilot: `xor edi, edi` sets `edi` to zero.
+`xor edi, edi` sets `edi` to zero.
 
 It works because XORing a register with itself always produces `0`:
 
@@ -564,23 +633,15 @@ For `syscall` exit, that means:
 
 So this is just a compact way to write `mov rdi, 0`, and in 64-bit mode writing to `edi` also clears the upper 32 bits of `rdi`.
 
-User: so ;xor edi, edi and ;mov rdi, 0	 ar ethe same?
+so ;xor edi, edi and ;mov rdi, 0	 ar ethe same?
 
-GitHub Copilot: Yes, for this use they are effectively the same.
+Yes, for this use they are effectively the same.
 
 `mov rdi, 0` explicitly sets `rdi` to zero.
 
 `xor edi, edi` also sets `rdi` to zero, because writing to `edi` clears the full 64-bit `rdi` register in x86-64.
 
 The difference is that `xor edi, edi` is a common shorter/faster way to zero the register.
-
-User: does it matter if i call it like this:
-;mov rax, 60		; exit(0)
-	;xor edi, edi
-
-	or like this?
-
-GitHub Copilot: No, it does not matter for the exit syscall. These two sequences are equivalent in effect:
 
 ```asm
 mov rax, 60
@@ -600,62 +661,11 @@ Both end with `rax = 60` and `rdi = 0` right before `syscall`, so the program ex
 
 The only practical difference is style. People often put `mov rax, 60` first because it reads more like “select syscall, set args, invoke syscall,” but the CPU does not care as long as the values are correct at the moment of `syscall`.
 
-User: this example isnot working:
-mov rdi, src		; input string (devined at the top)
-	call ft_strlen		; ft_strlen() function call
 
-	mov rdi, 1 			; stdout
-	mov rsi, rax		; return from ft_strlen()
-	mov rdx, len 		; src 
-	call ft_write		; call ft_write()
 
-	xor edi, edi		; clears stdout (sets rdi to 0) 
-	mov rax, 60			; exit(0)
-	syscall
+why is the output 9?
 
-	i want to print the return of ft_strlen()
-	instead of usig echo $?
-
-GitHub Copilot: Your example does not work because `ft_write` does not print numbers. It prints bytes from a memory address, and you are doing this:
-
-```asm
-mov rsi, rax
-```
-
-But `rax` contains the length returned by `ft_strlen`, not a pointer to a string. So `ft_write` tries to read from an invalid address like `12`, which fails or crashes.
-
-If you want to print the return value of `ft_strlen()`, you must convert that number to ASCII first, then write the resulting string. In other words, `ft_strlen` returns an integer, and `ft_write` only prints buffers.
-
-If your goal is just to verify the value quickly, the easy options are:
-
-```asm
-mov rdi, src
-call ft_strlen
-
-mov rdi, rax
-mov rax, 60
-syscall
-```
-
-That lets you inspect the exit code with `$?`, but it is not printed to the screen.
-
-If you want the number visible on stdout, you need an integer-to-string routine. The flow should be:
-
-```asm
-mov rdi, src
-call ft_strlen
-; convert rax to decimal text in a buffer
-; set rdi = 1
-; set rsi = buffer
-; set rdx = length of converted text
-call ft_write
-```
-
-If you want, I can write you a small `print_rax` routine in assembly so your `ft_strlen` result prints as text.
-
-User: why is the output 9?
-
-GitHub Copilot: I’m checking the most likely cause locally: whether you are seeing the program’s exit status or an actual printed value, because that changes the explanation completely.
+I’m checking the most likely cause locally: whether you are seeing the program’s exit status or an actual printed value, because that changes the explanation completely.
 
 Because your string is not null-terminated.
 
@@ -676,57 +686,8 @@ len equ $ - src - 1
 
 Then `ft_strlen(src)` should return 13 for Hello world! plus newline.
 
-Also, if you are checking with `echo $?`, that is the program’s exit status, not printed output. It will show the value you put in `rdi` before `exit`, not what `ft_write` prints.
 
-If you want, I can correct the exact test block in main.s so `ft_strlen` returns a predictable value.
 
-User: mov rdi, src		; input string (devined at the top)
-	call ft_strlen		; ft_strlen() function call
-
-	mov rdi, rdi		; clears stdout (sets rdi to 0) 
-	mov rax, 60			; exit(0)
-	syscall
-
-	i want to print the value of tf_strlen() return
-
-	and is it mov rdi, rdi or mov rdi, 0 or mov rdi, rdi
-
-GitHub Copilot: `ft_strlen` returns its value in `rax`, not in `rdi`.
-
-So:
-
-- `mov rdi, rdi` does nothing
-- `mov rdi, 0` sets `rdi` to zero
-- `mov rdi, rax` copies the `ft_strlen` return value into `rdi`
-
-If you want to use the return value as the program exit code, do this:
-
-```asm
-mov rdi, src
-call ft_strlen
-
-mov rdi, rax
-mov rax, 60
-syscall
-```
-
-That does not print the value. It only makes the shell exit code equal to the length.
-
-If you want to print the number on screen, `ft_write` cannot print `rax` directly, because it prints bytes from a buffer, not an integer. You need to convert the number in `rax` to ASCII first, then call `ft_write`.
-
-So the short answer is: `mov rdi, rdi` is not correct for this, and `mov rdi, 0` only exits with status 0. To preserve the return value, use `mov rdi, rax`.
-
-User: ;mov rdi, 1			; fd = stdout
-	;mov rsi, src		; input string
-	;mov rdx, len		; length of string
-	;call ft_write		; call write()
-
-	;mov rdi, 0			; clears stdout (sets rdi to 0)
-	;mov rax, 60		; exit(0)
-	;syscall
-	but then here it is fine to do mov rdi, 0	
-
-GitHub Copilot: Yes, because that line is for the exit syscall.
 
 For exit:
 
@@ -739,24 +700,12 @@ mov rdi, 0
 mov rax, 60
 syscall
 
-That is different from the earlier ft_strlen case, where you wanted to preserve the return value. There, rdi had to get the value from rax because you were passing the length as the exit status.
 
-For ft_write, rdi is not 0 unless you want to write to stdin, which is not normal. For stdout, rdi should be 1.
 
-User: what is this doing then?
-;mov rdi, rdi
 
-GitHub Copilot: `mov rdi, rdi` does nothing.
+could i use printf instead of write to print the output of ft_strlen
 
-It copies the value in `rdi` into `rdi` again, so the register stays exactly the same. This is called a no-op.
-
-In your file, because it is commented out with `;`, it also has no effect at all.
-
-People sometimes leave instructions like that as placeholders while testing or stepping through code, but it is not useful for changing state.
-
-User: could i use printf instead of write to print the output of ft_strlen
-
-GitHub Copilot: Yes. `printf` can print the numeric return value from `ft_strlen`, and it is the simpler choice if you want formatted output.
+Yes. `printf` can print the numeric return value from `ft_strlen`, and it is the simpler choice if you want formatted output.
 
 You would need:
 
@@ -793,38 +742,17 @@ main:
 
 That will print the length returned by `ft_strlen`.
 
-If you want, I can adapt your current main.s exactly to use `printf` instead of `ft_write`.
-
-User: zsh: segmentation fault (core dumped)  ./testAMS
-
-GitHub Copilot: I’m checking the current test entry point and build settings to pin the crash to one likely cause, not guess broadly. The leading hypothesis is a call-convention issue in the assembly main, so I’m reading the exact main.s and Makefile before changing anything.
-
-Read [](file:///home/jmetzger/Documents/Advanced/Libasm/main.s)
-
-Read [](file:///home/jmetzger/Documents/Advanced/Libasm/Makefile)
-
-Read [](file:///home/jmetzger/Documents/Advanced/Libasm/src/ft_strlen.s)
-
 The crash source is now narrow: `main` is ending with `leave`/`ret` even though the frame-pointer prologue is commented out, so it returns with an invalid stack frame. I’m restoring the prologue and keeping the `printf` call ABI-safe in the same small edit.
 
-Generating patch (18 lines) in [](file:///home/jmetzger/Documents/Advanced/Libasm/main.s)
-
 
 ```
-
-```
-The frame-pointer fix is in place; the next check is to rebuild and run the test executable to confirm the segfault is gone. If it still crashes, I’ll inspect the exact return path rather than broadening the change.
-
-Ran terminal command:  nasm -f elf64 main.s -o main.o && gcc main.o -L. -lasm -no-pie -o testAMS && ./testAMS; echo $?
-
-Made changes.
-
-User: push rbp			; saves caller’s old base/frame pointer on the stack
+push rbp			; saves caller’s old base/frame pointer on the stack
 	mov rbp, rsp		; rbp points to the current stack top, so the function can use rbp as a stable reference for its local stack frame.
+```
 
-	is this only uesed for ft_strlen
+is this only uesed for ft_strlen
 
-GitHub Copilot: No. It is not specific to `ft_strlen`.
+No. It is not specific to `ft_strlen`.
 
 `push rbp` / `mov rbp, rsp` is the standard prologue for any function when you want a normal stack frame. It is used for:
 
@@ -837,14 +765,6 @@ In your `main`, it matters because you call `ft_strlen` and `printf`, and you re
 
 If you were writing a tiny assembly function that just does a syscall and never returns with `ret`, you could sometimes skip it. But for a normal function like `main`, it is the right pattern.
 
-User: instead of calling this:
-;mov rdi, 0			; sets rdi to 0 -> exit successfully
-	;mov rax, 60			; exit(0)
-	;syscall
-
-	eerytime after i test a functio, can i call it once at the end?
-
-GitHub Copilot: Yes. You can call the exit only once at the end of `main` after all your test calls.
 
 For a test harness, the usual pattern is:
 
@@ -868,12 +788,12 @@ syscall
 
 So yes, test all the functions you want first, then exit once at the end.
 
-User: what is this used for then?
+what is this used for then?
 mov eax, 0
 	leave
 	ret
 
-GitHub Copilot: That is the normal way to end a function in assembly.
+That is the normal way to end a function in assembly.
 
 `mov eax, 0` sets the return value of `main` to 0, which means success.
 
@@ -882,31 +802,13 @@ GitHub Copilot: That is the normal way to end a function in assembly.
 - `push rbp`
 - `mov rbp, rsp`
 
-It is basically shorthand for:
-
-```asm
-mov rsp, rbp
-pop rbp
-```
-
-`ret` then returns control to the caller.
-
-So together, this means:
-
 - restore the stack
 - return 0 from `main`
 - finish the function cleanly
 
 In your current file, this is the proper ending if you are returning from `main` like a normal C function.
 
-User: but
-mov eax, 0
-leave
-ret
-is like
-return 0/
-
-GitHub Copilot: Yes. In `main`, it is essentially the assembly equivalent of `return 0;`.
+Yes. In `main`, it is essentially the assembly equivalent of `return 0;`.
 
 ```asm
 mov eax, 0
@@ -928,12 +830,11 @@ return 0;
 
 The difference is that in assembly you also have to clean up the stack frame yourself with `leave` before `ret`.
 
-User: xor eax, eax		
-	call printf
 
-	is xor eax, eax important
+xor eax, eax		
+call printf
 
-GitHub Copilot: Yes. For `printf`, `xor eax, eax` is important.
+Yes. For `printf`, `xor eax, eax` is important.
 
 On x86-64 System V ABI, variadic functions like `printf` need `al` to contain the number of vector registers used for floating-point arguments. If you are not passing any floating-point arguments, that value must be 0.
 
@@ -948,9 +849,8 @@ call printf
 
 Without it, `printf` may mis-handle the call because it thinks you passed floating-point arguments when you did not.
 
-User: so mov eax, 0 and xor eax, eax are just saying to printf that no floating-point arguments was passed
-
-GitHub Copilot: Yes, for `printf` and other variadic functions on x86-64 System V, setting `eax` to 0 tells the call ABI that no floating-point/vector arguments were passed in XMM registers.
+so mov eax, 0 and xor eax, eax are just saying to printf that no floating-point arguments was passed
+Yes, for `printf` and other variadic functions on x86-64 System V, setting `eax` to 0 tells the call ABI that no floating-point/vector arguments were passed in XMM registers.
 
 More precisely:
 
@@ -960,9 +860,8 @@ More precisely:
 
 So your understanding is basically right, but it is an ABI rule for variadic calls, not `printf` itself.
 
-User: if floating-point/vector arguments were passed would it then be mov eax, 1
-
-GitHub Copilot: Not exactly. The value in `al` should match the **count** of XMM registers you used for floating-point arguments.
+if floating-point/vector arguments were passed would it then be mov eax, 1
+Not exactly. The value in `al` should match the **count** of XMM registers you used for floating-point arguments.
 
 So:
 
@@ -984,568 +883,11 @@ You set `al` to the count of XMM registers you filled with arguments.
 
 ---
 
-User: ; --- ssize_t ft_read(int fd, void *buf, size_t count); ---
-	mov rdi, filename		; fd = filename
-	mov rsi, 0				; O_RDONLY
-	call open				; call open()
 
-	mov rax, 60
-	syscall
-
-	mov rdi, rdi			; open fd -> what fucntion open() returned
-	mov rsi, buffer			; buf[100] -> buffer resb 100
-	call ft_read			; call ft_read()
-
-	mov rax, 60
-	syscall
-
-	can you help me fix my main for testing ft_read
-
-GitHub Copilot: I’m checking the current test harness and the `ft_read` implementation shape so I can fix the call site with the smallest possible change. The likely issue is the harness is mixing up `open` and `ft_read` calling conventions, so I’ll verify the actual register expectations before editing.
-
-Read [](file:///home/jmetzger/Documents/Advanced/Libasm/main.s)
-
-Read [](file:///home/jmetzger/Documents/Advanced/Libasm/src/ft_read.s)
-
-Read [](file:///home/jmetzger/Documents/Advanced/Libasm/src/ft_write.s)
-
-I confirmed the bug: the harness exits immediately after `open`, and it never passes the returned file descriptor or a read size into `ft_read`. I’m switching it to a straight open → read → write → exit flow so you can actually observe the result.
-
-Apply Patch
-
-The first edit attempt failed on patch formatting, so I’m reapplying the same small fix cleanly. After that I’ll do a focused validation by reading the updated harness and checking it matches the intended call sequence.
-
-Generating patch (47 lines) in [](file:///home/jmetzger/Documents/Advanced/Libasm/main.s)
-
-
-```
-
-```
-The harness is patched; now I’m doing the cheapest real validation, which is a build. That will catch any register or syntax mistakes immediately instead of guessing from the diff.
-
-Ran terminal command:  make
-
-Made changes.
-
-User: what does, push rbp
-	mov rbp, rsp mean?
-
-GitHub Copilot: `push rbp` saves the caller’s old base/frame pointer on the stack.
-
-`mov rbp, rsp` then makes `rbp` point to the current stack top, so the function can use `rbp` as a stable reference for its local stack frame.
-
-Together, they form a common function prologue. In your main.s, it also conveniently realigns the stack before you call libc functions like `open` and `ft_write`.
-
-If you want, I can also show what the matching `pop rbp` / `leave` would do on return.
-
-User: would this be correct?
-; --- size_t ft_strlen(const char *s) ---
-	;mov rdi, src		; input string (devined at the top)
-	;call ft_strlen		; ft_strlen() function call
-
-	;mov rdi, 1 		; stdout
-	;mov rdi, rax		; return from ft_strlen()
-	;mov rdx, len 		; src 
-	;call ft_write		; call ft_write()
-
-	;mov rax, 60		; exit(0)
-	;syscall
-
-GitHub Copilot: Not as written.
-
-`ft_write(fd, buf, count)` needs the buffer pointer in `rsi`, but your snippet overwrites `rdi` twice and never sets `rsi`. If the goal is to print the original string, it should be:
-
-```asm
-mov rdi, 1
-mov rsi, src
-mov rdx, len
-call ft_write
-```
-
-If the goal is to print the return value of `ft_strlen`, that won’t work directly because `ft_strlen` returns a number in `rax`, not a string buffer. You’d need to convert that number to text first.
-
-Your `exit(0)` part is fine:
-```asm
-mov rax, 60
-syscall
-```
-
-If you want, I can rewrite this block in main.s so it cleanly tests `ft_strlen` first, then `ft_write`.
-
-User: can you give me the correct version:
-;mov rdi, src		; input string (devined at the top)
-	;call ft_strlen		; ft_strlen() function call
-
-	;mov rdi, 1 		; stdout
-	;mov rdi, rax		; return from ft_strlen()
-	;mov rdx, len 		; src 
-	;call ft_write		; call ft_write()
-
-	;mov rax, 60		; exit(0)
-	;syscall
-
-GitHub Copilot: Yes. If your goal is to call `ft_strlen` and then print the original string, the corrected block is:
-
-```asm
-mov rdi, src
-call ft_strlen
-
-mov rdi, 1
-mov rsi, src
-mov rdx, len
-call ft_write
-
-mov rax, 60
-xor edi, edi
-syscall
-```
-
-If you want to test the return value of `ft_strlen` itself, that value is in `rax`, but it is not directly printable with `ft_write` because `ft_write` expects a buffer address in `rsi`, not a number.
-
-User: mov rax, 60
-xor edi, edi
-syscall
-mov rax, 60 = exit(0);
-what is xor edi, edi
-
-GitHub Copilot: `xor edi, edi` sets `edi` to zero.
-
-It works because XORing a register with itself always produces `0`:
-
-```asm
-xor edi, edi
-```
-
-For `syscall` exit, that means:
-
-- `rax = 60` selects the `exit` syscall
-- `rdi = 0` is the exit status
-- `syscall` terminates the program successfully
-
-So this is just a compact way to write `mov rdi, 0`, and in 64-bit mode writing to `edi` also clears the upper 32 bits of `rdi`.
-
-User: so ;xor edi, edi and ;mov rdi, 0	 ar ethe same?
-
-GitHub Copilot: Yes, for this use they are effectively the same.
-
-`mov rdi, 0` explicitly sets `rdi` to zero.
-
-`xor edi, edi` also sets `rdi` to zero, because writing to `edi` clears the full 64-bit `rdi` register in x86-64.
-
-The difference is that `xor edi, edi` is a common shorter/faster way to zero the register.
-
-User: does it matter if i call it like this:
-;mov rax, 60		; exit(0)
-	;xor edi, edi
-
-	or like this?
-
-GitHub Copilot: No, it does not matter for the exit syscall. These two sequences are equivalent in effect:
-
-```asm
-mov rax, 60
-xor edi, edi
-syscall
-```
-
-and
-
-```asm
-xor edi, edi
-mov rax, 60
-syscall
-```
-
-Both end with `rax = 60` and `rdi = 0` right before `syscall`, so the program exits with status 0.
-
-The only practical difference is style. People often put `mov rax, 60` first because it reads more like “select syscall, set args, invoke syscall,” but the CPU does not care as long as the values are correct at the moment of `syscall`.
-
-User: this example isnot working:
-mov rdi, src		; input string (devined at the top)
-	call ft_strlen		; ft_strlen() function call
-
-	mov rdi, 1 			; stdout
-	mov rsi, rax		; return from ft_strlen()
-	mov rdx, len 		; src 
-	call ft_write		; call ft_write()
-
-	xor edi, edi		; clears stdout (sets rdi to 0) 
-	mov rax, 60			; exit(0)
-	syscall
-
-	i want to print the return of ft_strlen()
-	instead of usig echo $?
-
-GitHub Copilot: Your example does not work because `ft_write` does not print numbers. It prints bytes from a memory address, and you are doing this:
-
-```asm
-mov rsi, rax
-```
-
-But `rax` contains the length returned by `ft_strlen`, not a pointer to a string. So `ft_write` tries to read from an invalid address like `12`, which fails or crashes.
-
-If you want to print the return value of `ft_strlen()`, you must convert that number to ASCII first, then write the resulting string. In other words, `ft_strlen` returns an integer, and `ft_write` only prints buffers.
-
-If your goal is just to verify the value quickly, the easy options are:
-
-```asm
-mov rdi, src
-call ft_strlen
-
-mov rdi, rax
-mov rax, 60
-syscall
-```
-
-That lets you inspect the exit code with `$?`, but it is not printed to the screen.
-
-If you want the number visible on stdout, you need an integer-to-string routine. The flow should be:
-
-```asm
-mov rdi, src
-call ft_strlen
-; convert rax to decimal text in a buffer
-; set rdi = 1
-; set rsi = buffer
-; set rdx = length of converted text
-call ft_write
-```
-
-If you want, I can write you a small `print_rax` routine in assembly so your `ft_strlen` result prints as text.
-
-User: why is the output 9?
-
-GitHub Copilot: I’m checking the most likely cause locally: whether you are seeing the program’s exit status or an actual printed value, because that changes the explanation completely.
-
-Because your string is not null-terminated.
-
-`ft_strlen` expects a C string ending with a zero byte, but your data is:
-
-```asm
-src db "Hello world!", 10
-```
-
-That is just the text plus a newline. There is no final `0`, so `ft_strlen` keeps reading past the string until it happens to find a zero byte somewhere in memory. That gives undefined results, and 9 is just one possible result.
-
-Fix it like this:
-
-```asm
-src db "Hello world!", 10, 0
-len equ $ - src - 1
-```
-
-Then `ft_strlen(src)` should return 13 for Hello world! plus newline.
-
-Also, if you are checking with `echo $?`, that is the program’s exit status, not printed output. It will show the value you put in `rdi` before `exit`, not what `ft_write` prints.
-
-If you want, I can correct the exact test block in main.s so `ft_strlen` returns a predictable value.
-
-User: mov rdi, src		; input string (devined at the top)
-	call ft_strlen		; ft_strlen() function call
-
-	mov rdi, rdi		; clears stdout (sets rdi to 0) 
-	mov rax, 60			; exit(0)
-	syscall
-
-	i want to print the value of tf_strlen() return
-
-	and is it mov rdi, rdi or mov rdi, 0 or mov rdi, rdi
-
-GitHub Copilot: `ft_strlen` returns its value in `rax`, not in `rdi`.
-
-So:
-
-- `mov rdi, rdi` does nothing
-- `mov rdi, 0` sets `rdi` to zero
-- `mov rdi, rax` copies the `ft_strlen` return value into `rdi`
-
-If you want to use the return value as the program exit code, do this:
-
-```asm
-mov rdi, src
-call ft_strlen
-
-mov rdi, rax
-mov rax, 60
-syscall
-```
-
-That does not print the value. It only makes the shell exit code equal to the length.
-
-If you want to print the number on screen, `ft_write` cannot print `rax` directly, because it prints bytes from a buffer, not an integer. You need to convert the number in `rax` to ASCII first, then call `ft_write`.
-
-So the short answer is: `mov rdi, rdi` is not correct for this, and `mov rdi, 0` only exits with status 0. To preserve the return value, use `mov rdi, rax`.
-
-User: ;mov rdi, 1			; fd = stdout
-	;mov rsi, src		; input string
-	;mov rdx, len		; length of string
-	;call ft_write		; call write()
-
-	;mov rdi, 0			; clears stdout (sets rdi to 0)
-	;mov rax, 60		; exit(0)
-	;syscall
-	but then here it is fine to do mov rdi, 0	
-
-GitHub Copilot: Yes, because that line is for the exit syscall.
-
-For exit:
-
-- rax = 60 selects exit
-- rdi = 0 means “exit successfully”
-
-So this is correct:
-
-mov rdi, 0
-mov rax, 60
-syscall
-
-That is different from the earlier ft_strlen case, where you wanted to preserve the return value. There, rdi had to get the value from rax because you were passing the length as the exit status.
-
-For ft_write, rdi is not 0 unless you want to write to stdin, which is not normal. For stdout, rdi should be 1.
-
-User: what is this doing then?
-;mov rdi, rdi
-
-GitHub Copilot: `mov rdi, rdi` does nothing.
-
-It copies the value in `rdi` into `rdi` again, so the register stays exactly the same. This is called a no-op.
-
-In your file, because it is commented out with `;`, it also has no effect at all.
-
-People sometimes leave instructions like that as placeholders while testing or stepping through code, but it is not useful for changing state.
-
-User: could i use printf instead of write to print the output of ft_strlen
-
-GitHub Copilot: Yes. `printf` can print the numeric return value from `ft_strlen`, and it is the simpler choice if you want formatted output.
-
-You would need:
-
-- `extern printf`
-- a format string like `"%zu\n", 0`
-- pass the `ft_strlen` result in `rsi`
-- set `rax` to 0 before calling `printf` because it is variadic
-
-Example:
-
-```asm
-extern printf
-
-section .data
-    fmt db "%zu", 10, 0
-
-section .text
-main:
-    push rbp
-    mov rbp, rsp
-
-    mov rdi, src
-    call ft_strlen
-
-    mov rsi, rax
-    mov rdi, fmt
-    xor eax, eax
-    call printf
-
-    mov eax, 0
-    leave
-    ret
-```
-
-That will print the length returned by `ft_strlen`.
-
-If you want, I can adapt your current main.s exactly to use `printf` instead of `ft_write`.
-
-User: zsh: segmentation fault (core dumped)  ./testAMS
-
-GitHub Copilot: I’m checking the current test entry point and build settings to pin the crash to one likely cause, not guess broadly. The leading hypothesis is a call-convention issue in the assembly main, so I’m reading the exact main.s and Makefile before changing anything.
-
-Read [](file:///home/jmetzger/Documents/Advanced/Libasm/main.s)
-
-Read [](file:///home/jmetzger/Documents/Advanced/Libasm/Makefile)
-
-Read [](file:///home/jmetzger/Documents/Advanced/Libasm/src/ft_strlen.s)
-
-The crash source is now narrow: `main` is ending with `leave`/`ret` even though the frame-pointer prologue is commented out, so it returns with an invalid stack frame. I’m restoring the prologue and keeping the `printf` call ABI-safe in the same small edit.
-
-Generating patch (18 lines) in [](file:///home/jmetzger/Documents/Advanced/Libasm/main.s)
-
-
-```
-
-```
-The frame-pointer fix is in place; the next check is to rebuild and run the test executable to confirm the segfault is gone. If it still crashes, I’ll inspect the exact return path rather than broadening the change.
-
-Ran terminal command:  nasm -f elf64 main.s -o main.o && gcc main.o -L. -lasm -no-pie -o testAMS && ./testAMS; echo $?
-
-Made changes.
-
-User: push rbp			; saves caller’s old base/frame pointer on the stack
-	mov rbp, rsp		; rbp points to the current stack top, so the function can use rbp as a stable reference for its local stack frame.
-
-	is this only uesed for ft_strlen
-
-GitHub Copilot: No. It is not specific to `ft_strlen`.
-
-`push rbp` / `mov rbp, rsp` is the standard prologue for any function when you want a normal stack frame. It is used for:
-
-- keeping a stable frame pointer
-- making local variables and saved registers easier to access
-- making `leave` / `ret` work correctly
-- helping stack alignment before function calls like `printf`
-
-In your `main`, it matters because you call `ft_strlen` and `printf`, and you return with `leave` / `ret`.
-
-If you were writing a tiny assembly function that just does a syscall and never returns with `ret`, you could sometimes skip it. But for a normal function like `main`, it is the right pattern.
-
-User: instead of calling this:
-;mov rdi, 0			; sets rdi to 0 -> exit successfully
-	;mov rax, 60			; exit(0)
-	;syscall
-
-	eerytime after i test a functio, can i call it once at the end?
-
-GitHub Copilot: Yes. You can call the exit only once at the end of `main` after all your test calls.
-
-For a test harness, the usual pattern is:
-
-```asm
-; test 1
-; test 2
-; test 3
-
-mov eax, 0
-leave
-ret
-```
-
-That is often better than using the Linux `exit` syscall in the middle of the file, because `main` is normally returned from like a regular C function. If you do want to use the syscall version, keep it only once at the very end:
-
-```asm
-mov rdi, 0
-mov rax, 60
-syscall
-```
-
-So yes, test all the functions you want first, then exit once at the end.
-
-User: what is this used for then?
-mov eax, 0
-	leave
-	ret
-
-GitHub Copilot: That is the normal way to end a function in assembly.
-
-`mov eax, 0` sets the return value of `main` to 0, which means success.
-
-`leave` undoes the stack frame created by:
-
-- `push rbp`
-- `mov rbp, rsp`
-
-It is basically shorthand for:
-
-```asm
-mov rsp, rbp
-pop rbp
-```
-
-`ret` then returns control to the caller.
-
-So together, this means:
-
-- restore the stack
-- return 0 from `main`
-- finish the function cleanly
-
-In your current file, this is the proper ending if you are returning from `main` like a normal C function.
-
-User: but
-mov eax, 0
-leave
-ret
-is like
-return 0/
-
-GitHub Copilot: Yes. In `main`, it is essentially the assembly equivalent of `return 0;`.
-
-```asm
-mov eax, 0
-leave
-ret
-```
-
-means:
-
-- set the function return value to 0
-- restore the stack frame
-- return to the caller
-
-So for a normal C-style function, that is the same idea as:
-
-```c
-return 0;
-```
-
-The difference is that in assembly you also have to clean up the stack frame yourself with `leave` before `ret`.
-
-User: xor eax, eax		
-	call printf
-
-	is xor eax, eax important
-
-GitHub Copilot: Yes. For `printf`, `xor eax, eax` is important.
-
-On x86-64 System V ABI, variadic functions like `printf` need `al` to contain the number of vector registers used for floating-point arguments. If you are not passing any floating-point arguments, that value must be 0.
-
-So this is correct:
-
-```asm
-xor eax, eax
-call printf
-```
-
-`mov eax, 0` would also work. `xor eax, eax` is just the shorter/common way to zero `eax`.
-
-Without it, `printf` may mis-handle the call because it thinks you passed floating-point arguments when you did not.
-
-User: so mov eax, 0 and xor eax, eax are just saying to printf that no floating-point arguments was passed
-
-GitHub Copilot: Yes, for `printf` and other variadic functions on x86-64 System V, setting `eax` to 0 tells the call ABI that no floating-point/vector arguments were passed in XMM registers.
-
-More precisely:
-
-- `al` holds the number of vector registers used for variadic arguments
-- `xor eax, eax` clears that to 0
-- `mov eax, 0` does the same thing
-
-So your understanding is basically right, but it is an ABI rule for variadic calls, not `printf` itself.
-
-User: if floating-point/vector arguments were passed would it then be mov eax, 1
-
-GitHub Copilot: Not exactly. The value in `al` should match the **count** of XMM registers you used for floating-point arguments.
-
-So:
-
-- No floating-point args: `mov eax, 0`
-- 1 floating-point arg (in XMM0): `mov eax, 1`
-- 2 floating-point args (in XMM0, XMM1): `mov eax, 2`
-- etc.
-
-For example, if you were calling `printf` with a double:
-
-```asm
-movsd xmm0, [some_double]  ; pass double in XMM0
-mov rdi, format_string
-mov eax, 1                 ; 1 XMM register used
-call printf
-```
-
-You set `al` to the count of XMM registers you filled with arguments.
-
-User: srcD db "Hello world!-COPY\n", 0
+srcD db "Hello world!-COPY\n", 0
 why is the \n not showing
 
-GitHub Copilot: In assembly, `\n` in a `db` string is assembled as the actual newline byte (0x0A), not as two literal characters.
+In assembly, `\n` in a `db` string is assembled as the actual newline byte (0x0A), not as two literal characters.
 
 So when you write:
 
@@ -1555,46 +897,10 @@ srcD db "Hello world!-COPY\n", 0
 
 The `\n` becomes a single byte: the newline character. When printed, it moves the cursor to the next line — it doesn't display as the characters `\` and `n`.
 
-If you want to see it working, uncomment the `ft_strdup` test and fix the variable name:
-
-```asm
-;mov rdi, srcD
-;call ft_strdup
-
-;mov rdx, rax
-;mov rdi, 1
-;mov rsi, lenD        ; <- was lenC, should be lenD
-;call ft_write
-```
-
-Then rebuild and run. The newline will move to the next line in the output.
-
-If you literally want the string `\n` (backslash followed by n), you would need:
-
-```asm
-srcD db "Hello world!-COPY\n", 0
-```
-
 But in assembly string literals, `\n` is always interpreted as a newline byte.
 
-User: Hello world!42\nHello World!
-Test me
-12% 
-this is the output i get
-
-GitHub Copilot: That output makes sense given what your test is doing:
-
-- `12` — from `printf` printing the `ft_strlen` result
-- `%` — from the format string `"%zu"` (the `%zu` itself is being printed, not interpreted as a format specifier)
-- `Hello world!42` (with newline) — from `ft_write` printing `srcW`
-- `Hello World!` and `Test me` — from `ft_read` reading the file and `ft_write` printing it
-
-The issue is that `printf` is not interpreting `%zu` correctly. That usually means `rsi` is not set up right before the call, or the format string pointer is wrong.
-
-Can you clarify: do you want `printf` to print the number 12, or is this output what you expected?
-
-User: srcW db "Hello world!42\n", 0
-	lenW equ $ - srcW
+srcW db "Hello world!42\n", 0
+lenW equ $ - srcW
 
 mov rdi, 1			; fd = stdout
 	mov rsi, srcW		; input string
@@ -1606,7 +912,7 @@ the output is Hello world!42\n
 
 which means it is not reading a \n
 
-GitHub Copilot: The issue is that `lenW` includes the null terminator.
+The issue is that `lenW` includes the null terminator.
 
 When you do:
 
@@ -1626,7 +932,8 @@ lenW equ $ - srcW - 1
 
 Now `ft_write` will write only the string without the null byte, and the `\n` will show as an actual newline.
 
-User: why is 
+
+why is 
 mov rdi, src		; input string (devined at the top)
 	call ft_strlen		; ft_strlen() function call
 
@@ -1635,9 +942,8 @@ mov rdi, src		; input string (devined at the top)
 	mov eax, 0			; NO floating-point/vector arguments were passed (for ABI rules)
 	call printf	
 
-	output pinted last altough i call it first
-
-GitHub Copilot: That's a buffering issue.
+output pinted last altough i call it first
+that's a buffering issue.
 
 `printf` uses buffered I/O, while `ft_write` uses unbuffered syscalls.
 
@@ -1666,13 +972,13 @@ intFormat db "%zu\n", 0
 
 Then `printf` will flush after printing because of the newline.
 
-User: srcW db "Hello world!42\n", 0
+srcW db "Hello world!42\n", 0
 	lenW equ $ - srcW
 
 	whatis the 0 ?
 	
 
-GitHub Copilot: The `0` is a null terminator.
+The `0` is a null terminator.
 
 ```asm
 srcW db "Hello world!42\n", 0
@@ -1884,4 +1190,30 @@ Even if your code “seems fine”
 
 
 mov eax, 0			; NO floating-point/vector arguments were passed (for ABI rules) -> xor eax, eax: required for variadic functions
+
+
 ---
+---
+
+
+## ⚙️Resources
+
+https://www.timdbg.com/posts/fakers-guide-to-assembly/
+
+https://people.kth.se/~dbro/x86-64-ref-sheet.pdf
+
+https://www.cs.uaf.edu/2017/fall/cs301/reference/x86_64.html
+
+https://gist.github.com/justinian/385c70347db8aca7ba93e87db90fc9a6
+
+https://www.scribd.com/document/991336592/Intro-to-Assembly-Language-Module-Cheat-Sheet
+
+https://hackaday.io/project/188193-assembly-language-for-ecm-16ttl-homebrew-cpu/log/213335-mnemonics-list
+
+[tutorials](https://www.tutorialspoint.com/assembly_programming/assembly_introduction.htm)
+
+[64-bit assembly](https://medium.com/@rivian96/understanding-16-bit-32-bit-and-64-bit-operand-behavior-in-assembly-70a6e3addf80)
+
+---
+
+-->
