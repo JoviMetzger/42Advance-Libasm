@@ -277,18 +277,17 @@ I recommend reading through [A Faker's Guide to Assembly](https://www.timdbg.com
 ## Installation and Setup
 **IF you work from home and need to install NASM** <br>
 
-#### 1) Check if NASM is installed already ("Development Tools" installs it automataclly if you install Linux)
-- Open a Linux terminal.
-- Type `whereis` nasm and press ENTER.
-- If it is already installed, then a line like, `nasm: /usr/bin/nasm` appears. Otherwise, you will see just `nasm:`, then you need to install NASM.
+#### 1) Check if NASM is installed already *("Development Tools" installs it automataclly if you install Linux)*
+- Open terminal **->** `whereis nasm`
+- If it is already installed, then a line like, `nasm: /usr/bin/nasm` appears. <br> Otherwise, you need to install NASM.
 
 #### 2) Install NASM:
-- Check The netwide assembler (NASM) website for the latest version.
-- Download your OS(Linux, Window, macOS) source archive `nasm-X.XX.ta.gz`, where `X.XX` is the NASM version number in the archive.
-- Unpack the archive into a directory which creates a subdirectory `nasm-X. XX`.
-- `cd` to `nasm-X.XX` and type `./configure`. This shell script will find the best C compiler to use and set up Makefiles accordingly.
+- Check The netwide assembler (NASM) website for the latest version
+- Download your OS *(Linux, Window, macOS)* source archive `nasm-X.XX.ta.gz`
+- Unpack the archive *(Open the .zip or .ta file)*
+- `cd` to into the nasm file and type `./configure`.
 - Type `make` to build the nasm and ndisasm binaries.
-- Type `make install` to install nasm and ndisasm in `/usr/local/bin` and to install the man pages.
+- Type `make install` to install nasm and ndisasm **->** This will create `/usr/local/bin` 
 
 ---
 
@@ -318,7 +317,7 @@ section	.text
 	global _start             ;must be declared for linker (ld)
 
 section	.data
-  msg db "Hello world!", 0    ;string to be printed
+  msg db "Hello World!", 0    ;string to be printed
   len equ $ - msg             ;length of the string
 
 _start:	                      ;tells linker entry point
@@ -339,17 +338,15 @@ _start:	                      ;tells linker entry point
 &emsp; •&nbsp; **NOTE:**&nbsp;&nbsp;&nbsp;  for linux:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `elf64` <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for windows: `win64`<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for macOS:&nbsp;&nbsp;&nbsp; `macho64` <br>
-&emsp; •&nbsp; **2.** **IF THERE IS ANY ERROR**, you will be prompted about that at this stage. *(Just like C/C++)* <br>
-&emsp; •&nbsp; **3.** To link the object file and create an executable file `ld test.o -o TestMe` <br>
-&emsp; •&nbsp; **NOTE:**&nbsp;&nbsp;&nbsp;  `TestMe`: executable name <br>
+&emsp; •&nbsp; **2.** To link the object file and create an executable file `ld test.o -o TestMe` **->** *executable name: `TestMe`* <br>
 &emsp; •&nbsp; **NOTE:**&nbsp;&nbsp;&nbsp;  for Linux: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`ld` <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for Windows: `gcc`<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for macOS: &nbsp;&nbsp;&nbsp;&nbsp;`clang`<br>
-&emsp; •&nbsp; **4.** Execute the program by typing `./TestMe` *(just like C/C++)* <br>
-&emsp; •&nbsp; **5.** **OUTPUT** should be `Hello, world!` <br>
+&emsp; •&nbsp; **3.** Execute the program: `./TestMe` <br>
+&emsp; •&nbsp; **4.** **OUTPUT** should be `Hello World!` <br>
 <ul>
 
-**Example:** 
+**Example:** *(Linux)* 
 ```
 nasm -f elf64 test.s
 ld test.o -o TestMe
@@ -373,8 +370,8 @@ After you have assembled and linked your assembly code into an executable named 
 **Here's how you can do it:** &emsp; run `gdb ./TestMe -tui` <br> <br>
 You're invoking **GDB (GNU Debugger)** with the **Text User Interface (TUI)** mode enabled. <br>
 This mode provides a terminal-based graphical interface that splits the screen into **two parts.** <br>
-* **1.** The top part shows your source code *(test.s)* <br>
-* **2.** The bottom part of the screen displays the usual command-line interface of GDB, where you can type commands, set breakpoints, examine memory, view registers, and interact with the debugger.
+* **Part 1:** The top part shows your source code *(test.s)* <br>
+* **Part 2:** The bottom part of the screen displays the usual command-line interface of GDB, where you can type commands, set breakpoints, examine memory, view registers, and interact with the debugger.
 
 <br><br>
 
