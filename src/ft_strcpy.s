@@ -1,7 +1,8 @@
-section .text
-	global ft_strcpy
+global ft_strcpy
 
 extern ft_strlen
+
+section .text
 
 ; rdi -> dest | rsi -> src
 ft_strcpy:
