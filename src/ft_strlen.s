@@ -1,5 +1,6 @@
+global ft_strlen				; Export Function
+
 section .text
-	global ft_strlen				; Export Function
 
 ft_strlen:
 	xor	rax, rax				; Initialize counter -> Same as: mov rax, 0
