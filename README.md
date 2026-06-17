@@ -628,3 +628,527 @@ HHH
   - [Assembly Mnemonics List](https://hackaday.io/project/188193-assembly-language-for-ecm-16ttl-homebrew-cpu/log/213335-mnemonics-list)
 
 <br>
+
+
+
+
+<!-- 
+NOT DONE:
+
+
+## Assembly Program Structure
+
+### 🎱 Code Structure
+
+```
+_start:           |   Entry Point
+    mov rax, 1    |
+    syscall       |
+```
+```
+   eyryy
+   mov rax, 1
+```
+
+64-bit syscall convention:
+
+| Purpose        | Register |
+| -------------- | -------- |
+| syscall number | `rax`    |
+| arg 1          | `rdi`    |
+| arg 2          | `rsi`    |
+| arg 3          | `rdx`    |
+| arg 4          | `r10`    |
+| arg 5          | `r8`     |
+| arg 6          | `r9`     |
+NpOTE return in rax
+
+| Syscall | Number |
+| ------- | ------ |
+| `read`  | 0      |
+| `write` | 1      |
+| `open`  | 2      |
+| `close` | 3      |
+| `exit`  | 60     |
+
+30most used mnemics
+---
+
+
+<details>
+  <summary><strong> 🎱 &nbsp;&nbsp; CH</strong></summary>
+  <ul>
+
+## 🎱 CH
+
+
+
+
+---
+
+<br>
+</ul>
+</details>
+
+<br><br>
+
+
+
+Different meanings:
+
+write(1, msg, len)
+```
+mov rax, 1 
+mov rdi, 1 
+mov rsi, msg 
+mov rdx, len 
+syscall
+```
+
+Yes. You can call the exit only once at the end of main after all your test calls.
+
+For a test harness, the usual pattern is:
+```
+; test 1
+; test 2
+; test 3
+
+mov eax, 0
+leave
+ret
+```
+
+That is often better than using the Linux exit syscall in the middle of the file, because main is normally returned from like a regular C function. If you do want to use the syscall version, keep it only once at the very end:
+```
+mov rdi, 0
+mov rax, 60
+syscall
+```
+exit(0)
+```
+mov rax, 60
+mov rdi, 0
+syscall
+```
+
+read(0, buffer, 100)
+```
+mov rax, 0
+mov rdi, 0
+mov rsi, buffer
+mov rdx, 100
+syscall
+```
+
+open(filename, 0)
+```
+mov rax, 2
+mov rdi, filename
+mov rsi, 0
+syscall
+```
+
+
+---
+
+For exit:
+
+- rax = 60 selects exit
+- rdi = 0 means “exit successfully”
+
+So this is correct:
+
+mov rdi, 0
+mov rax, 60
+syscall
+
+```
+mov rax, 60
+xor edi, edi
+syscall
+```
+mov rax, 60 = exit(0);
+what is xor edi, edi
+
+`xor edi, edi` sets `edi` to zero.
+
+It works because XORing a register with itself always produces `0`:
+
+```asm
+xor edi, edi
+```
+
+For `syscall` exit, that means:
+
+- `rax = 60` selects the `exit` syscall
+- `rdi = 0` is the exit status
+- `syscall` terminates the program successfully
+
+So this is just a compact way to write `mov rdi, 0`, and in 64-bit mode writing to `edi` also clears the upper 32 bits of `rdi`.
+
+so ;xor edi, edi and ;mov rdi, 0	 ar ethe same?
+
+Yes, for this use they are effectively the same.
+
+`mov rdi, 0` explicitly sets `rdi` to zero.
+
+`xor edi, edi` also sets `rdi` to zero, because writing to `edi` clears the full 64-bit `rdi` register in x86-64.
+
+The difference is that `xor edi, edi` is a common shorter/faster way to zero the register.
+
+
+Both end with `rax = 60` and `rdi = 0` right before `syscall`, so the program exits with status 0.
+
+The only practical difference is style. People often put `mov rax, 60` first because it reads more like “select syscall, set args, invoke syscall,” but the CPU does not care as long as the values are correct at the moment of `syscall`.
+
+---
+
+
+
+The crash source is now narrow: `main` is ending with `leave`/`ret` even though the frame-pointer prologue is commented out, so it returns with an invalid stack frame. I’m restoring the prologue and keeping the `printf` call ABI-safe in the same small edit.
+
+
+`push rbp` / `mov rbp, rsp` is the standard prologue for any function when you want a normal stack frame. It is used for:
+
+- keeping a stable frame pointer
+- making local variables and saved registers easier to access
+- making `leave` / `ret` work correctly
+- helping stack alignment before function calls like `printf`
+
+In your `main`, it matters because you call `ft_strlen` and `printf`, and you return with `leave` / `ret`.
+
+If you were writing a tiny assembly function that just does a syscall and never returns with `ret`, you could sometimes skip it. But for a normal function like `main`, it is the right pattern.
+
+
+For a test harness, the usual pattern is:
+
+```asm
+; test 1
+; test 2
+; test 3
+
+mov eax, 0
+leave
+ret
+```
+
+That is often better than using the Linux `exit` syscall in the middle of the file, because `main` is normally returned from like a regular C function. If you do want to use the syscall version, keep it only once at the very end:
+
+```asm
+mov rdi, 0
+mov rax, 60
+syscall
+```
+
+So yes, test all the functions you want first, then exit once at the end.
+
+what is this used for then?
+mov eax, 0
+	leave
+	ret
+
+That is the normal way to end a function in assembly.
+
+`mov eax, 0` sets the return value of `main` to 0, which means success.
+
+`leave` undoes the stack frame created by:
+
+- `push rbp`
+- `mov rbp, rsp`
+
+- restore the stack
+- return 0 from `main`
+- finish the function cleanly
+
+In your current file, this is the proper ending if you are returning from `main` like a normal C function.
+
+Yes. In `main`, it is essentially the assembly equivalent of `return 0;`.
+
+```asm
+mov eax, 0
+leave
+ret
+```
+
+means:
+
+- set the function return value to 0
+- restore the stack frame
+- return to the caller
+
+So for a normal C-style function, that is the same idea as:
+
+```c
+return 0;
+```
+
+The difference is that in assembly you also have to clean up the stack frame yourself with `leave` before `ret`.
+
+
+xor eax, eax		
+call printf
+
+Yes. For `printf`, `xor eax, eax` is important.
+
+On x86-64 System V ABI, variadic functions like `printf` need `al` to contain the number of vector registers used for floating-point arguments. If you are not passing any floating-point arguments, that value must be 0.
+
+So this is correct:
+
+```asm
+xor eax, eax
+call printf
+```
+
+`mov eax, 0` would also work. `xor eax, eax` is just the shorter/common way to zero `eax`.
+
+Without it, `printf` may mis-handle the call because it thinks you passed floating-point arguments when you did not.
+
+so mov eax, 0 and xor eax, eax are just saying to printf that no floating-point arguments was passed
+Yes, for `printf` and other variadic functions on x86-64 System V, setting `eax` to 0 tells the call ABI that no floating-point/vector arguments were passed in XMM registers.
+
+More precisely:
+
+- `al` holds the number of vector registers used for variadic arguments
+- `xor eax, eax` clears that to 0
+- `mov eax, 0` does the same thing
+
+So your understanding is basically right, but it is an ABI rule for variadic calls, not `printf` itself.
+
+if floating-point/vector arguments were passed would it then be mov eax, 1
+Not exactly. The value in `al` should match the **count** of XMM registers you used for floating-point arguments.
+
+So:
+
+- No floating-point args: `mov eax, 0`
+- 1 floating-point arg (in XMM0): `mov eax, 1`
+- 2 floating-point args (in XMM0, XMM1): `mov eax, 2`
+- etc.
+
+For example, if you were calling `printf` with a double:
+
+```asm
+movsd xmm0, [some_double]  ; pass double in XMM0
+mov rdi, format_string
+mov eax, 1                 ; 1 XMM register used
+call printf
+```
+
+You set `al` to the count of XMM registers you filled with arguments.
+
+---
+
+
+
+
+
+
+---
+
+The movsb (Move String Byte) instruction in x86 assembly copies a single byte from the source memory location to the destination
+
+In assembly language, MOVSB (MOVe String Byte) is a specialized instruction used to copy a 1-byte value from one memory location to another. It is frequently used with a repeat prefix (REP)
+
+
+movsb will only copy a single byte. You must use the rep prefix to do multiple bytes.
+
+What is DF?
+
+DF = Direction Flag.
+
+String instructions like:
+
+movsb
+
+can move:
+
+forward
+backward
+
+depending on DF.
+
+cld
+
+means:
+
+DF = 0
+
+which makes pointers increase:
+
+rsi++
+rdi++
+
+after each byte copy.
+
+What does times 32 db 0 mean?
+
+This is NASM syntax:
+
+dest times 32 db 0
+
+means:
+
+Create 32 bytes
+Initialize every byte to 0
+
+
+What does lea mean?
+
+lea = Load Effective Address
+
+It computes an address and stores that address in a register.
+
+lea rdi, [rel strFormat]
+
+means:
+
+rdi = address of strFormat
+
+So:
+
+rdi = 0x1000
+
+not:
+
+rdi = '%'
+
+and not:
+
+rdi = "%s\n"
+
+but the address where the string begins.
+
+---
+
+
+rsp is the stack pointer register in x86-64.
+
+So when you see:
+
+sub rsp, 8
+
+or
+
+add rsp, 8
+
+it means you are moving the stack up or down by 8 bytes.
+
+🧠 1. What is rsp?
+RSP = Register Stack Pointer
+
+It always points to the top of the stack (current stack position in memory).
+
+Think:
+
+stack = memory area used for function calls, local variables
+rsp = “where the stack currently ends”
+🧠 2. What does sub rsp, 8 mean?
+sub rsp, 8
+
+👉 Move stack pointer down by 8 bytes
+
+That means:
+
+you just “reserved space” on the stack
+
+Visually:
+
+Before:
+rsp → [old top]
+
+After sub rsp, 8:
+rsp → [new space allocated]
+🧠 3. Why do we do this before printf?
+
+On Linux x86-64 (System V ABI):
+
+👉 The stack must be 16-byte aligned before calling functions
+
+So sometimes you adjust it like:
+
+sub rsp, 8
+call printf
+add rsp, 8
+🧠 4. What does add rsp, 8 do?
+add rsp, 8
+
+👉 Undo the change
+
+So you:
+
+allocate stack space before call
+restore stack after call
+🧠 5. Why 8 specifically?
+
+Because:
+
+registers are 64-bit = 8 bytes
+stack alignment rules often require adjusting by 8 to fix 16-byte alignment
+🧠 6. Simple analogy
+
+Think of stack like a pile of plates:
+
+rsp = pointer to top plate
+sub rsp, 8 = “move pointer down → reserve space”
+add rsp, 8 = “move pointer back up → cleanup”
+⚠️ 7. What happens if you don’t align rsp?
+
+Bad things like:
+
+crashes in printf
+random memory corruption
+broken SIMD instructions inside libc
+
+Even if your code “seems fine”
+
+
+
+
+mov eax, 0			; NO floating-point/vector arguments were passed (for ABI rules) -> xor eax, eax: required for variadic functions
+
+
+
+# Core Topics Checklist
+
+## Registers
+
+- [ ] General-purpose registers
+- [ ] Register aliases (`rax`, `eax`, `ax`, `al`)
+- [ ] Calling convention registers
+- [ ] Stack pointer (`rsp`)
+- [ ] Base pointer (`rbp`)
+
+## Memory
+
+- [ ] Stack memory
+- [ ] Heap memory
+
+## Instructions
+
+- [ ] `mov`
+- [ ] `lea`
+- [ ] `push`
+- [ ] `pop`
+- [ ] `call`
+- [ ] `ret`
+- [ ] `cmp`
+- [ ] `test`
+- [ ] Conditional jumps (`je`, `jne`, `jg`, `jl`)
+- [ ] Arithmetic (`add`, `sub`, `imul`, `idiv`)
+
+
+
+---
+---
+
+
+
+- Cheat Sheets & References (x86-64 / NASM)
+  - [x64 NASM Cheat Sheet](https://gist.github.com/justinian/385c70347db8aca7ba93e87db90fc9a6)
+  - [x86-64 Reference Sheet (PDF)](https://people.kth.se/~dbro/x86-64-ref-sheet.pdf)
+  - [x86-64 Quick Reference](https://www.cs.uaf.edu/2017/fall/cs301/reference/x86_64.html)
+  - [Assembly Mnemonics List](https://hackaday.io/project/188193-assembly-language-for-ecm-16ttl-homebrew-cpu/log/213335-mnemonics-list)
+
+
+
+
+-->
