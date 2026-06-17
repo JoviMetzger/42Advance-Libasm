@@ -1,7 +1,8 @@
-section	.text
-	global ft_write
+global ft_write
 
 extern __errno_location
+
+section .text
 	
 ft_write:
 	mov	rax, 1			; system call number (sys_write)
