@@ -1,9 +1,10 @@
-section .text
-	global ft_strdup
+global ft_strdup
 
 extern ft_strlen
 extern ft_strcpy
 extern malloc
+
+section .text
 
 ; rdi -> str(input)
 ft_strdup:
