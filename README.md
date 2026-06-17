@@ -32,7 +32,7 @@ Computers can read machine language directly, but it is extremely difficult for 
 
 Assembly provides a human readable representation of machine instructions, allowing programmers to communicate directly with the processor using short, readable commands called **mnemonics**. <br>
 ***For Example:*** 
-```
+```asm
 mov rdi, 5
 add rdi, 3 
 ```
@@ -312,7 +312,7 @@ I recommend reading through [A Faker's Guide to Assembly](https://www.timdbg.com
 - **NOTE:** this example is written in 64-bit assembly
 - **NOTE:** `;` is a comment in Assembly language
 - **NOTE:** If you don't understand what is happening below, **that is okay!** This is only about compiling. <br>But in short this means: **`write(1, msg, len)`**
-```
+```asm
 global _start            	  ;must be declared for linker (ld)
 
 section	.data
@@ -391,7 +391,206 @@ The Medium article, [Understanding 16-bit, 32-bit, and 64-bit Operand Behavior](
   <summary id="assemblyStructure">&nbsp;&nbsp;&nbsp;<strong>Assembly Program Structure</strong></summary>
   <br>
 
-HHH
+### 🎱 File Structure
+There is **no required order** or file structure. <br>
+However, a common convention is to place declarations first, followed by data sections, and finally the code section.
+**Following a consistent structure makes assembly files easier to read and maintain.**
+
+
+**Common File structure:**
+
+| Item | Meaning |
+| ---- | --- |
+| &ensp; <br>1️⃣ `global` <br> &ensp;| **exports** a symbol *(function, variable, struct, etc)* so it can be referenced from other object files. |
+| &ensp; <br> 2️⃣ `extern` <br> &ensp;| **imports** a symbol that is defined in another object file or library. |
+| &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; <br>3️⃣ `section .data` <br> &ensp;| contains **initialized variables**.<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; • Strings <br> &ensp;&ensp;&ensp;&ensp;&ensp;&ensp; • Numbers with known initial values <br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; • Arrays with predefined contents |
+| &ensp; <br> 4️⃣ `section .bss` <br> &ensp; | contains **uninitialized variables**. <br>*(OS initializes .bss* **memory to zero***)* <br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; • Buffers<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; • Large arrays <br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; • Variables whose initial value doesn't matter  |
+| &ensp; <br> 5️⃣ `section .text` <br> &ensp; | Contains **machine instructions** ***(code)***. <br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; • Stores program instructions. |
+| &ensp; <br> 6️⃣ **code section** <br> &ensp;| code and function definitions. |
+
+<details>
+  <summary>🔻&nbsp;&nbsp;<strong> Example :</strong>&nbsp;&nbsp; 🔻</summary>
+  <br>
+  <ul>
+
+***NOTE:*** *this example is purely for the structure*
+```asm
+global start
+
+extern ft_strlen
+extern malloc
+
+section	.data
+   src db "Hello world!", 0
+   len equ $ - src - 1
+
+section .bss
+   buffer resb 100
+
+section .text
+
+start:
+    mov rdi, src
+    call ft_strlen
+    ret
+```
+
+---
+
+</ul>
+</details>
+
+
+<br> <br>
+
+### 🎱 Code Structure
+
+<!--
+```
+_start:           |   Entry Point
+    mov rax, 1    |
+    syscall       |
+```
+```
+   eyryy
+   mov rax, 1
+```
+
+64-bit syscall convention:
+
+| Purpose        | Register |
+| -------------- | -------- |
+| syscall number | `rax`    |
+| arg 1          | `rdi`    |
+| arg 2          | `rsi`    |
+| arg 3          | `rdx`    |
+| arg 4          | `r10`    |
+| arg 5          | `r8`     |
+| arg 6          | `r9`     |
+NpOTE return in rax
+
+| Syscall | Number |
+| ------- | ------ |
+| `read`  | 0      |
+| `write` | 1      |
+| `open`  | 2      |
+| `close` | 3      |
+| `exit`  | 60     |
+
+30most used mnemics
+---
+-->
+
+<br>
+
+<details>
+  <summary><strong> 🎱 &nbsp;&nbsp; Comments</strong></summary>
+  <ul>
+
+## 🎱 Comments
+
+Assembly language comments begin with a semicolon `;`.
+```asm
+mov rax, 42      ; This is a comment
+```
+
+
+---
+
+<br>
+</ul>
+</details>
+
+<details>
+  <summary><strong> 🎱 &nbsp;&nbsp;.data &nbsp; Info</strong></summary>
+  <br>
+  <ul>
+
+
+
+## 🎱 .data Info
+
+### Different Types of Strings
+
+| | Null-Terminated String | String with Newline | Raw Byte Sequence |
+| ---- | ---- | ---- | ---- |
+| &ensp; <br>**Example** <br>&ensp; | `src db "Hello world!", 0` | `src db "Hello world!", 10, 0` | `src db "Hello world!"` |
+| &ensp; <br>**Meaning**  <br>&ensp;| `0` represents a null terminator (`'\0'`), <br> marking the end of the string. | `10` is the ASCII newline character (`'\n'`). <br>The string ends with a newline followed by a null terminator. | A sequence of bytes with no terminator. |
+| &ensp; <br>**Stored Bytes** <br>&ensp; | `H e l l o   w o r l d ! [\0]` | `H e l l o   w o r l d ! [\n] [\0]` | `H e l l o   w o r l d !` |
+
+
+- A **raw byte sequence** is perfectly valid when using system calls such as `write`, because `write` requires an explicit length.
+
+- Functions such as `strlen()` and `printf("%s")`, expect a **null-terminated string**. Without a null terminator, they will continue reading memory until a `'\0'` byte is encountered, resulting in undefined behavior.
+
+<br>
+
+### String Length
+
+```
+src db "Hello world!", 0
+len equ $ - src                 | 13 (includes the null terminator)
+len equ $ - src - 1             | 12 (excludes the null terminator)
+```
+
+> **Note:** `$ - src` calculates the total number of bytes between the current location (`$`) and the label (`src`). It includes every byte defined after `src`, including a null terminator if one exists.
+
+<br>
+
+### Good to Know
+
+| | Output | Reason |
+| --- | --- | --- |
+| `write`  | Prints immediately when the syscall is executed. | • Uses an unbuffered system call.<br>• Writes directly to the file descriptor *(stdout, file, pipe, etc.)*.<br>• Requires an explicit byte count. |
+| `printf` | May not print immediately, even if called before other statements. | • Uses buffered I/O.<br>• When writing to a terminal, output is typically **line-buffered** *(flushed on `\n`)*. <br> • When writing to a file or pipe, output is often **fully buffered**.<br>• Output appears when the buffer is flushed, becomes full, or the program exits. |
+
+
+#### Solution ⭕ Option 1: Call `fflush`
+```asm
+section .data
+    intFormat db "%zu", 0
+
+mov rdi, intFormat      ; format string
+mov eax, 0              ; no vector arguments
+call printf
+
+xor edi, edi            ; NULL -> flush all output streams
+call fflush
+```
+
+
+#### Solution ⭕ Option 2: Add a Newline
+```asm
+section .data
+    intFormat db "%zu", 10, 0
+
+mov rdi, intFormat      ; format string
+mov eax, 0              ; no vector arguments
+call printf
+```
+
+> **Note:** When stdout is connected to a terminal, adding a newline usually causes the line-buffered stream to flush automatically. If stdout is redirected to a file or pipe, the output may still remain buffered.
+
+<br>
+
+---
+
+<br>
+</ul>
+</details>
+
+<details>
+  <summary><strong> 🎱 &nbsp;&nbsp; CH</strong></summary>
+  <ul>
+
+## 🎱 CH
+
+
+kkkkkk
+
+<br> <br>
+</ul>
+</details>
 
 ---
 
