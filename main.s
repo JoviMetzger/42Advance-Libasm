@@ -1,5 +1,4 @@
-section .text
-	global main
+global main
 
 ; list all libary functions
 extern open
@@ -33,6 +32,8 @@ section	.data
 
 section .bss
 	buffer resb 100
+
+section .text
 
 main:
 	;; --- Standard prologue for any function --- 
