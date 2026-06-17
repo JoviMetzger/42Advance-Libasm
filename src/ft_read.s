@@ -1,7 +1,8 @@
-section .text
-	global ft_read
+global ft_read
 
 extern __errno_location
+
+section .text
 
 ft_read: 
 	mov	rax, 0			; system call number (sys_read)
