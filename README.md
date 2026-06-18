@@ -482,8 +482,6 @@ When the `syscall` instruction is executed on Linux x86-64, the kernel expects t
 
 ---
 
-<br>
-
 <details>
   <summary><strong> 🎱 &nbsp;&nbsp; Comments</strong></summary>
   <ul>
@@ -581,21 +579,46 @@ call printf
 </details>
 
 <details>
-  <summary><strong> 🎱 &nbsp;&nbsp; CH</strong></summary>
+  <summary><strong> 🎱 &nbsp;&nbsp; Stack Alignment</strong></summary>
   <ul>
 
-## 🎱 CH
+## 🎱 Stack Alignment
 
+Stack alignment means that the stack pointer `(rsp)` must be positioned at a specific **memory boundary** before certain operations, especially for function calls.
+This requirement exists because some instructions *(especially SIMD instructions that use XMM registers)* expect properly aligned memory. Misalignment can reduce performance and, in some cases, cause crashes or faults. 
 
-kkkkkk
+<br>
 
-<br> <br>
-</ul>
+#### What happens during a function call?
+On Linux x86-64, the System V ABI requires the stack to be **16-byte aligned** before a function call <br>
+&nbsp;&nbsp;1️⃣&nbsp; Before the call `rsp` is **16-byte aligned**. <br>
+&nbsp;&nbsp;2️⃣&nbsp; Then you execute: `call func` <br>
+&emsp;&emsp;&emsp; •&nbsp; The CPU automatically pushes the 8-byte return address onto the stack. <br>
+&emsp;&emsp;&emsp; •&nbsp; `rsp` is now **8 bytes** off from a **16-byte boundary** <br>
+&nbsp;&nbsp;3️⃣&nbsp; **How to align the stack again** <br>
+Many functions begin with something like:
+```
+push rbp
+mov rbp, rsp
+```
+<br>
+
+The extra `push rbp` subtracts another **8 bytes** from `rsp`, restoring 16-byte alignment.
+```
+Before call:      rsp % 16 = 0
+After call:       rsp % 16 = 8
+After push rbp:   rsp % 16 = 0
+```
+<br>
+
+**That is why alignment matters**, because if the stack is misaligned:
+- Some library functions may crash.
+- SIMD instructions may fault or require slower unaligned memory accesses.
+- Performance can suffer.
+
 </details>
 
 ---
-
-<br>
 
 </details>
 
@@ -929,7 +952,6 @@ kkkkkk
 
 </details></ul>
 
-
 ---
 
 ## ⚙️Resources
@@ -947,3 +969,125 @@ kkkkkk
   - [Assembly Mnemonics List](https://hackaday.io/project/188193-assembly-language-for-ecm-16ttl-homebrew-cpu/log/213335-mnemonics-list)
 
 <br>
+
+<!---
+### Registers
+- [ ] Register aliases (`rax`,` eax`, `ax`, `al`)
+- [ ] Function argument registers (`rdi`, `rsi`, `rdx`, `rcx`, `r8`, `r9`)
+- [ ] Other registers (`r10`, `r11`, `r12`, `r13`, `r14`, `r15`)
+- [ ] Stack pointer (`rsp`)
+- [ ] Base/frame pointer (`rbp`)
+<ul>
+<details>
+  <summary>&nbsp;Register aliases (<code>rax</code>,<code>eax</code>, <code>ax</code>, <code>al</code>)</summary>
+<ul>
+
+> **Moves data from source to destination.**
+Return value register (rax)
+>**Note:** 
+> - Before syscall&nbsp;:&nbsp; `rax` contains the syscall number.
+> - After syscall&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp; `rax` contains the return value from the kernel.
+> ```asm
+> mov rax, rbx
+> ```
+</ul>
+</details>
+
+<details>
+  <summary>&nbsp;Function argument registers (<code>rdi</code>, <code>rsi</code>, <code>rdx</code>, <code>rcx</code>, <code>r8</code>, <code>r9</code>)</summary>
+<ul>
+
+> **Moves data from source to destination.**
+> ```asm
+> mov rax, rbx
+> ```
+</ul>
+</details>
+
+<details>
+  <summary>&nbsp;Other registers (<code>r10</code>, <code>r11</code>, <code>r12</code>, <code>r13</code>, <code>r14</code>, <code>r15</code>)</summary>
+<ul>
+
+> **Moves data from source to destination.**
+> ```asm
+> mov rax, rbx
+> ```
+</ul>
+</details>
+
+<details>
+  <summary>&nbsp;Stack pointer (<code>rsp</code>)</summary>
+<ul>
+
+> **Moves data from source to destination.**
+> ```asm
+> mov rax, rbx
+> ```
+</ul>
+</details>
+
+<details>
+  <summary>&nbsp;Base/frame pointer (<code>rbp</code>)</summary>
+<ul>
+
+> **Moves data from source to destination.**
+> ```asm
+> mov rax, rbx
+> ```
+</ul>
+</details>
+</ul>
+
+
+### Memory
+- [ ] Stack memory
+- [ ] Heap memory
+- [ ] Data segment (`.data`)
+- [ ] BSS segment (`.bss`)
+<ul>
+<details>
+  <summary>&nbsp;Stack memory</summary>
+<ul>
+
+> **Moves data from source to destination.**
+> ```asm
+> mov rax, rbx
+> ```
+</ul>
+</details>
+
+<details>
+  <summary>&nbsp;Heap memory</summary>
+<ul>
+
+> **Moves data from source to destination.**
+> ```asm
+> mov rax, rbx
+> ```
+</ul>
+</details>
+
+<details>
+  <summary>&nbsp;Data segment (<code>.data</code>)</summary>
+<ul>
+
+> **Moves data from source to destination.**
+> ```asm
+> mov rax, rbx
+> ```
+</ul>
+</details>
+
+<details>
+  <summary>&nbsp;BSS segment (<code>.bss</code>)</summary>
+<ul>
+
+> **Moves data from source to destination.**
+> ```asm
+> mov rax, rbx
+> ```
+</ul>
+</details>
+</ul>
+
+-->
