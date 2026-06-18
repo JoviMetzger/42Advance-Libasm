@@ -630,6 +630,17 @@ kkkkkk
 </details>
 
 <details>
+  <summary>&nbsp;<code>movsb</code></summary>
+<ul>
+
+> **Copies one byte from the memory address pointed to by `rsi` to the memory address pointed to by `rdi`. After the copy, `rsi` and `rdi` are automatically updated.** <br> *`movsb` has no operands. It implicitly uses:* <br> `rsi` **->** source address <br> `rdi` **->** destination address <br> Can be used in a **loop** to **copy byte by byte**.
+> ```asm
+> movsb
+> ```
+</ul>
+</details>
+
+<details>
   <summary>&nbsp;<code>movzx</code></summary>
 <ul>
 
