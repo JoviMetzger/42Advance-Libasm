@@ -445,30 +445,33 @@ start:
 
 ### 🎱 Code Structure
 
-<!--
-```
-_start:           |   Entry Point
-    mov rax, 1    |
-    syscall       |
-```
-```
-   eyryy
-   mov rax, 1
+A program starts executing at its entry point and then executes instructions one by one.
+```asm
+_start:           ; Entry Point
+    mov rax, 1    ; Instruction with operands
+    syscall       ; Instruction that asks the kernel to perform a service
 ```
 
-64-bit syscall convention:
+```
+mov rax, 1
+│   │    │
+│   │    └─ Source operand
+│   └────── Destination operand
+└────────── Instruction
+```
+> **Meaning:** The CPU executes an **`instruction`** using the specified **`operands`**. <br>The role of each **operand** *(source, destination)* depends on the **instruction**  being executed.
 
-| Purpose        | Register |
-| -------------- | -------- |
-| syscall number | `rax`    |
-| arg 1          | `rdi`    |
-| arg 2          | `rsi`    |
-| arg 3          | `rdx`    |
-| arg 4          | `r10`    |
-| arg 5          | `r8`     |
-| arg 6          | `r9`     |
-NpOTE return in rax
+<br>
 
+####  System Calls
+
+Programs cannot directly perform operations such as reading files,
+writing to the terminal, or exiting the program. Instead, they request
+these services from the operating system through **system calls**.
+
+When the `syscall` instruction is executed on Linux x86-64, the kernel expects the syscall number and arguments to be placed in specific registers. <br><br>
+
+**Common System Calls:**
 | Syscall | Number |
 | ------- | ------ |
 | `read`  | 0      |
@@ -477,9 +480,7 @@ NpOTE return in rax
 | `close` | 3      |
 | `exit`  | 60     |
 
-30most used mnemics
 ---
--->
 
 <br>
 
