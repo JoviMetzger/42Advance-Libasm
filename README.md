@@ -133,7 +133,7 @@ ARM family
  ├─ 32-bit (ARM / AArch32)
  └─ 64-bit (ARM64 / AArch64)
 ```
-❗**NOTE:**❗ <br>
+❗ **NOTE:** ❗ <br>
 The names inside the parentheses are examples of processors or architecture versions belonging to that family and bitness. <br>  
 
 ---
