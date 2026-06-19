@@ -627,17 +627,188 @@ After push rbp:   rsp % 16 = 0
   <br>
 
 ### Registers
-- [ ] Register aliases (`rax`,` eax`, `ax`, `al`)
-- [ ] Function argument registers (`rdi`, `rsi`, `rdx`, `rcx`, `r8`, `r9`)
-- [ ] Other registers (`r10`, `r11`, `r12`, `r13`, `r14`, `r15`)
-- [ ] Stack pointer (`rsp`)
-- [ ] Base/frame pointer (`rbp`)
+<ul>
+<details>
+  <summary>&nbsp;Register aliases (<code>rax</code>,<code>eax</code>, <code>ax</code>, <code>al</code>)</summary>
+<ul>
+
+> `rax`, `eax`, `ax`, `al` **—> same register, different sizes** <br>
+> <br>
+> **rax :** Main accumulator register *(64-bit)*. <br>*Use when working with 64-bit values or pointers. <br> Also used for storing function return values.*
+> ```asm
+> mov rax, 42
+> ```
+> <br>
+>
+> **eax :** Lower 32 bits of rax. <br> *Use when working with 32-bit integers.*
+> ```asm
+> mov eax, 42
+> ```
+> <br>
+>
+> **ax :** Lower 16 bits of rax <br> *Mostly used for legacy code or specific hardware instructions.* <br>**(Rare to use in modern programs)**
+> ```asm
+> mov ax, 42
+> ```
+> <br>
+>
+> **al :** Lowest 8 bits of rax <br> *For bytes and characters.* <br>**(Very common when processing strings)**
+> ```asm
+> mov al, 'A'
+> ```
+> <br>
+>
+</ul>
+</details>
+
+<details>
+  <summary>&nbsp;Function argument registers (<code>rdi</code>, <code>rsi</code>, <code>rdx</code>, <code>rcx</code>, <code>r8</code>, <code>r9</code>)</summary>
+<ul>
+
+> **rdi &nbsp;&nbsp;:** &nbsp;Used for the **1st argument** passed to a function.
+> <br>
+> **rsi &nbsp;&nbsp; :** &nbsp;Used for the **2nd argument** passed to a function.
+> <br>
+> **rdx &nbsp;:** &nbsp;Used for the **3rd argument** passed to a function.
+> <br>
+> **rcx&nbsp;&nbsp;:** &nbsp;Used for the **4th argument** passed to a function.
+> <br>
+> **r8 &nbsp;&nbsp;&nbsp;:** &nbsp;Used for the **5th argument** passed to a function.
+> <br>
+> **r9 &nbsp;&nbsp;&nbsp;:** &nbsp;Used for the **6th argument** passed to a function.
+> ```asm
+> mov rdi, 10     ; arg1
+> mov rsi, 20     ; arg2
+> mov rdx, 30     ; arg3
+> mov rcx, 40     ; arg4
+> mov r8,  50     ; arg5
+> mov r9,  60     ; arg6
+> 
+> call sum        ; -> sum(10, 20, 30, 40, 50, 60);
+> ```
+> <br>
+</ul>
+</details>
+
+<details>
+  <summary>&nbsp;Other registers (<code>r10</code>, <code>r11</code>, <code>r12</code>, <code>r13</code>, <code>r14</code>, <code>r15</code>)</summary>
+<ul>
+
+> **Temporary Register: r10, r11:** <br> Scratch register used for temporary calculations. <br> Use these when you need extra workspace and don't care if a function call overwrites them.
+> ```asm
+> mov r10, rax
+> add r10, rbx
+> ```
+> <br>
+>
+> **Preserved Registers: r12, r13, r14, r15** <br> Callee-saved register used for Long-lived variables. <br> Use these for data you'll need after calling other functions.
+> ```asm
+> push r12
+> mov r12, rdi
+> 
+> call some_function
+>
+> ; r12 still contains original value
+> pop r12
+> ```
+> <br>
+</ul>
+</details>
+
+<details>
+  <summary>&nbsp;Stack pointer (<code>rsp</code>)</summary>
+<ul>
+
+> **Points to the top of the stack.** <br> `rsp` only tracks the top of the stack. <br> You normally you manipulate it indirectly:
+> ```asm
+> push rax
+> 
+> ; >> CPU does:
+> rsp -= 8
+> [rsp] = rax
+> 
+> ; Every `push` decreases `rsp`.
+> 
+> ; --------------------------------------
+> 
+> pop rax
+> 
+> ; >> CPU does: 
+> rax = [rsp]
+> rsp += 8
+>
+> ; Every `pop` increases `rsp`.
+> ```
+</ul>
+</details>
+
+<details>
+  <summary>&nbsp;Base/frame pointer (<code>rbp</code>)</summary>
+<ul>
+
+> **Accessing local variables and parameters on the stack.** <br> *Use rbp when you want a fixed reference to stack variables even if rsp changes.*
+> ```asm
+> mov rbp, rsp
+> ```
+</ul>
+</details>
+</ul>
+
 
 ### Memory
-- [ ] Stack memory
-- [ ] Heap memory
-- [ ] Data segment (`.data`)
-- [ ] BSS segment (`.bss`)
+<ul>
+<details>
+  <summary>&nbsp;Stack memory</summary>
+<ul>
+
+> **Memory used by functions.** <br>
+> **Liftime:** Until function returns.
+</ul>
+</details>
+
+<details>
+  <summary>&nbsp;Heap memory</summary>
+<ul>
+
+> **Memory allocated while the program is running.** <br>
+> The CPU does not manage the heap for you. <br>
+> You typically call functions such as: <br>
+> ```asm
+> malloc
+> free
+> ```
+> **Lifetime:** Until freed *(call free)*
+</ul>
+</details>
+
+<details>
+  <summary>&nbsp;Data segment (<code>.data</code>)</summary>
+<ul>
+
+> **Stores initialized data.**
+> ```asm
+> section .data
+>     number  dq 42
+>     message db "Hello", 0
+> ```
+</ul>
+</details>
+
+<details>
+  <summary>&nbsp;BSS segment (<code>.bss</code>)</summary>
+<ul>
+
+> **Stores uninitialized or zero-initialized data.** <br>
+> Only the size is recorded. No value
+> ```asm
+> section .bss
+>     buffer  resb 1024
+>     counter resq 1
+> ```
+</ul>
+</details>
+</ul>
+
 
 ### Instructions *(most common instructions)*
 <ul>
@@ -943,7 +1114,6 @@ After push rbp:   rsp % 16 = 0
 > xorps xmm0, xmm0
 > ```
 > <br>
->
 </ul>
 </details>
 </ul>
@@ -970,124 +1140,3 @@ After push rbp:   rsp % 16 = 0
 
 <br>
 
-<!---
-### Registers
-- [ ] Register aliases (`rax`,` eax`, `ax`, `al`)
-- [ ] Function argument registers (`rdi`, `rsi`, `rdx`, `rcx`, `r8`, `r9`)
-- [ ] Other registers (`r10`, `r11`, `r12`, `r13`, `r14`, `r15`)
-- [ ] Stack pointer (`rsp`)
-- [ ] Base/frame pointer (`rbp`)
-<ul>
-<details>
-  <summary>&nbsp;Register aliases (<code>rax</code>,<code>eax</code>, <code>ax</code>, <code>al</code>)</summary>
-<ul>
-
-> **Moves data from source to destination.**
-Return value register (rax)
->**Note:** 
-> - Before syscall&nbsp;:&nbsp; `rax` contains the syscall number.
-> - After syscall&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp; `rax` contains the return value from the kernel.
-> ```asm
-> mov rax, rbx
-> ```
-</ul>
-</details>
-
-<details>
-  <summary>&nbsp;Function argument registers (<code>rdi</code>, <code>rsi</code>, <code>rdx</code>, <code>rcx</code>, <code>r8</code>, <code>r9</code>)</summary>
-<ul>
-
-> **Moves data from source to destination.**
-> ```asm
-> mov rax, rbx
-> ```
-</ul>
-</details>
-
-<details>
-  <summary>&nbsp;Other registers (<code>r10</code>, <code>r11</code>, <code>r12</code>, <code>r13</code>, <code>r14</code>, <code>r15</code>)</summary>
-<ul>
-
-> **Moves data from source to destination.**
-> ```asm
-> mov rax, rbx
-> ```
-</ul>
-</details>
-
-<details>
-  <summary>&nbsp;Stack pointer (<code>rsp</code>)</summary>
-<ul>
-
-> **Moves data from source to destination.**
-> ```asm
-> mov rax, rbx
-> ```
-</ul>
-</details>
-
-<details>
-  <summary>&nbsp;Base/frame pointer (<code>rbp</code>)</summary>
-<ul>
-
-> **Moves data from source to destination.**
-> ```asm
-> mov rax, rbx
-> ```
-</ul>
-</details>
-</ul>
-
-
-### Memory
-- [ ] Stack memory
-- [ ] Heap memory
-- [ ] Data segment (`.data`)
-- [ ] BSS segment (`.bss`)
-<ul>
-<details>
-  <summary>&nbsp;Stack memory</summary>
-<ul>
-
-> **Moves data from source to destination.**
-> ```asm
-> mov rax, rbx
-> ```
-</ul>
-</details>
-
-<details>
-  <summary>&nbsp;Heap memory</summary>
-<ul>
-
-> **Moves data from source to destination.**
-> ```asm
-> mov rax, rbx
-> ```
-</ul>
-</details>
-
-<details>
-  <summary>&nbsp;Data segment (<code>.data</code>)</summary>
-<ul>
-
-> **Moves data from source to destination.**
-> ```asm
-> mov rax, rbx
-> ```
-</ul>
-</details>
-
-<details>
-  <summary>&nbsp;BSS segment (<code>.bss</code>)</summary>
-<ul>
-
-> **Moves data from source to destination.**
-> ```asm
-> mov rax, rbx
-> ```
-</ul>
-</details>
-</ul>
-
--->
