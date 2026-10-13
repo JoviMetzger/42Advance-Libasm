@@ -4,18 +4,22 @@ extern __errno_location
 
 section .text
 
+; ssize_t ft_read(int fd, void *buf, size_t count)
+; ABI: 
+;   RAX = 0
+;   arguments in RDI, RSI, RDX.
 ft_read: 
-	mov	rax, 0			; system call number (sys_read)
-	syscall				; execute kernel call: read(fd, buf, count)
-	cmp	rax, 0			; check value rax -> error on 0
-	jl	error			; jump if rax is than 0 -> syscall failed (negative errno)
-	ret					; success: rax = number of bytes read
+    mov     rax, 0                      ; System call number for read
+    syscall                             ; Execute kernel call: read(fd, *buf, c)
+    test    rax, rax                    ; Check if result is negative -> a negative result indicates a syscall error
+    js      .error                      ; Jump to .error if value is negative
+    ret	                                ; Return the successful byte count
 
-error:
-	neg	 rax				; convert return value: -errno -> errno (positive)
-	push rax				; save errno value temporarily
-	call __errno_location	; get address of thread-local errno
-	pop	rdi					; restore errno value into rdi
-	mov	[rax], rdi			; store errno into *(__errno_location())
-	mov	rax, -1				; function return value = -1
-	ret						; return to caller	
+.error:
+    neg     rax                         ; Convert -errno to errno (positive)
+    push    rax                         ; Save errno and aligne stack
+    call    __errno_location wrt ..plt	; Get address of thread-local errno
+    pop     rdi	                        ; Restore errno value into rdi
+    mov     dword[rax], edi             ; Store errno as int
+    mov     rax, -1                     ; Function returns value -1 -> Indicating a error
+    ret
