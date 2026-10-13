@@ -8,14 +8,23 @@ section .text
 
 ; rdi -> str(input)
 ft_strdup:
-	push rdi		; rdi currently contains str, so we save rdi on the stack
-	call ft_strlen	; call strlen(rdi)
+    push    rbx                 ; Saved RBX and align stack
+    mov     rbx, rdi            ; Store original source pointer
 
-	inc  rax		; add 1 to the length to reserve space for the null terminator '\0'
-	mov	 rdi, rax	; return value of ft_strlen(), rdi used for malloc(rdi)
-	call malloc		; call malloc(rdi)
+    ; malloc arguments
+    call    ft_strlen           ; RAX = length of str
+    lea     rdi, [rax + 1]      ; Length plus terminator
+    call    malloc wrt ..plt    ; Allocate bytes -> RAX will be returned
 
-	mov	 rdi, rax	; return value of malloc (new string) -> passed as first agrument to ft_strdup
-	pop	 rsi		; restore rdi, which we stored on the stack with 'push rdi' -> rsi stands for second agrument passed to ft_strdup
-	call ft_strcpy	; call ft_strcpy(original str, return from malloc)
-	ret				; return new string
+    ; Malloc check
+    test    rax, rax            ; Did malloc fail?
+    jz      .done               ; Jump to .done if NULL
+
+    ; strcpy arguments
+    mov     rdi, rax            ; Allocated destination -> what malloc returned
+    mov     rsi, rbx            ; Original source -> your string
+    call    ft_strcpy           ; Call ft_strcpy -> RAX will be returned
+
+.done:
+    pop     rbx                 ; Restore the caller's RBX
+    ret
