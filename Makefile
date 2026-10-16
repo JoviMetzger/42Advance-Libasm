@@ -31,7 +31,7 @@ SRC			=	$(SRC_DIR)/ft_strlen.s \
 OBJ_DIR		= obj
 OBJ			= $(SRC:$(SRC_DIR)/%.s=$(OBJ_DIR)/%.o)
 
-INPUTFILE	= touch test.txt && echo "Hello World\nTry Me test file!" >> test.txt
+INPUTFILE	= touch test.txt && echo "Hello World\nTry Me test file!\nSpecial: @@-$%?" >> test.txt
 
 # Default Targets
 all: $(NAME)
