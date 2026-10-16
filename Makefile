@@ -7,7 +7,7 @@ NASM		= nasm
 NASMFLAGS	= -f elf64
 AR			= ar
 ARFLAGS		= rcs
-CC			= cc
+CC			= gcc
 CFLAGS		= -Wall -Wextra -Werror
 
 # Colors
