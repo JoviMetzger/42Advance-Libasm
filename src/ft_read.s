@@ -13,7 +13,7 @@ ft_read:
     syscall                             ; Execute kernel call: read(fd, *buf, c)
     test    rax, rax                    ; Check if result is negative -> a negative result indicates a syscall error
     js      .error                      ; Jump to .error if value is negative
-    ret	                                ; Return the successful byte count
+    ret                                 ; Return the successful byte count
 
 .error:
     neg     rax                         ; Convert -errno to errno (positive)
